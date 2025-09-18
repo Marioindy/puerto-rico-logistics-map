@@ -73,8 +73,101 @@ const TrackingPage = () => {
 
   return (
     <div className="min-h-screen bg-white text-gray-900 relative">
-      {/* Main Layout - Map takes full screen */}
-      <div className="h-screen relative">
+      {/* Mobile Layout */}
+      <div className="lg:hidden">
+        {/* Mobile Header */}
+        <header className="bg-white border-b border-gray-200 px-4 py-3">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-xs uppercase tracking-widest text-blue-600">Dashboard</p>
+              <h1 className="text-lg font-semibold text-gray-900">PR Logistics Grid</h1>
+            </div>
+          </div>
+        </header>
+
+        {/* Mobile Map */}
+        <div className="h-[50vh]">
+          <Suspense fallback={<div className="flex h-full items-center justify-center text-gray-500">Loading...</div>}>
+            <InteractiveMap onMarkerClick={setSelectedPin} />
+          </Suspense>
+        </div>
+
+        {/* Mobile Controls */}
+        <div className="h-[50vh] overflow-y-auto bg-gray-50">
+          {selectedPin ? (
+            <div className="bg-white">
+              <FacilityInfoPanel
+                selectedPin={selectedPin}
+                onClose={() => setSelectedPin(null)}
+                isVisible={true}
+              />
+            </div>
+          ) : (
+            <div className="p-4 space-y-4">
+              {/* Search */}
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Search facilities..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2 bg-white border border-gray-300 rounded-md text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              {/* Filters */}
+              <div className="bg-white rounded-lg border border-gray-200 p-4">
+                <h3 className="text-sm font-semibold text-gray-700 mb-3">Filters</h3>
+                <div className="space-y-2">
+                  {filterCategories.map((category) => (
+                    <label key={category.id} className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          checked={selectedFilters[category.id] || false}
+                          onChange={() => toggleFilter(category.id)}
+                          className="w-4 h-4 text-blue-600 bg-white border-gray-300 rounded focus:ring-blue-500"
+                        />
+                        <span className="text-sm text-gray-700">{category.name}</span>
+                      </div>
+                      <span className="text-xs text-gray-500">({category.count})</span>
+                    </label>
+                  ))}
+                </div>
+                {Object.values(selectedFilters).some(Boolean) && (
+                  <button
+                    onClick={() => setSelectedFilters({})}
+                    className="mt-3 text-xs text-blue-600 hover:text-blue-800 underline"
+                  >
+                    Clear all filters
+                  </button>
+                )}
+                <div className="text-xs text-gray-500 mt-3">
+                  Showing {filteredMarkers.length} of {allMarkers.length} facilities
+                </div>
+              </div>
+
+              {/* Stats */}
+              <div className="bg-white rounded-lg border border-gray-200 p-4">
+                <h3 className="text-sm font-semibold text-gray-700 mb-3">Overview</h3>
+                <div className="grid grid-cols-2 gap-3">
+                  {operationalStats.map((stat) => (
+                    <div key={stat.title} className="bg-gray-50 rounded-lg p-3">
+                      <div className="text-xs font-medium text-gray-700">{stat.title}</div>
+                      <div className="text-lg font-bold text-blue-600">{stat.count}</div>
+                      <div className="text-xs text-gray-500">{stat.status}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Desktop Layout */}
+      <div className="hidden lg:block h-screen relative">
         {/* Header - Floating on top */}
         <header className="absolute top-0 left-0 right-0 z-30 bg-white/90 backdrop-blur-sm border-b border-gray-200 px-6 py-4">
           <div className="flex items-center justify-between">
