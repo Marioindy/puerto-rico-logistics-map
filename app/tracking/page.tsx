@@ -88,8 +88,8 @@ const TrackingPage = () => {
           </div>
         </header>
 
-        {/* Full-Screen Map */}
-        <div className="h-full pt-20">
+        {/* Map with Right Panel Space */}
+        <div className="h-full pt-20 pr-[420px]">
           <Suspense fallback={<div className="flex h-full items-center justify-center text-gray-500">Loading logistics grid...</div>}>
             <InteractiveMap onMarkerClick={setSelectedPin} />
           </Suspense>
@@ -140,40 +140,62 @@ const TrackingPage = () => {
               </button>
             )}
 
-            <div className="text-xs text-gray-500 mb-6">
+            <div className="text-xs text-gray-500">
               Showing {filteredMarkers.length} of {allMarkers.length} facilities
             </div>
-
-            {/* Facility Statistics - Only show when no facility is selected */}
-            {!selectedPin && (
-              <div className="pt-6 border-t border-gray-200">
-                <h3 className="text-sm font-semibold uppercase text-gray-700 mb-4">Facility Statistics</h3>
-                <div className="space-y-3 max-h-48 overflow-y-auto">
-                  {operationalStats.map((stat) => (
-                    <div key={stat.title} className="rounded-lg border border-gray-200 bg-white p-3">
-                      <div className="flex items-center justify-between mb-1">
-                        <h4 className="text-xs font-medium text-gray-700">{stat.title}</h4>
-                        <span className="text-sm font-bold text-blue-600">{stat.count}</span>
-                      </div>
-                      <p className="text-xs text-gray-500">Status: {stat.status}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
         </aside>
 
-        {/* Right Facility Information Panel - Main layer component */}
-        {selectedPin && (
-          <aside className="absolute top-24 right-6 w-96 max-h-[calc(100vh-8rem)] bg-white border border-gray-200 rounded-xl shadow-lg z-40 overflow-hidden">
+        {/* Right Information Panel - Always Visible */}
+        <aside className="absolute top-24 right-6 w-96 max-h-[calc(100vh-8rem)] bg-white border border-gray-200 rounded-xl shadow-lg z-40 overflow-hidden">
+          {selectedPin ? (
             <FacilityInfoPanel
               selectedPin={selectedPin}
               onClose={() => setSelectedPin(null)}
               isVisible={true}
             />
-          </aside>
-        )}
+          ) : (
+            <div className="h-full flex flex-col bg-white">
+              {/* Header */}
+              <div className="p-4 border-b border-gray-200">
+                <h2 className="text-lg font-semibold text-gray-900">Facility Information</h2>
+                <p className="text-sm text-gray-600">Select a facility on the map to view details</p>
+              </div>
+
+              {/* Content */}
+              <div className="flex-1 overflow-y-auto p-4">
+                <div className="space-y-4">
+                  <div className="text-center py-8">
+                    <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+                      <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                      </svg>
+                    </div>
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">No Facility Selected</h3>
+                    <p className="text-sm text-gray-500 mb-6">Click on any marker on the map to view detailed facility information and operational data.</p>
+                  </div>
+
+                  {/* Quick Stats */}
+                  <div className="border-t border-gray-200 pt-4">
+                    <h4 className="text-sm font-semibold uppercase text-gray-700 mb-4">System Overview</h4>
+                    <div className="space-y-3">
+                      {operationalStats.map((stat) => (
+                        <div key={stat.title} className="rounded-lg border border-gray-200 bg-gray-50 p-3">
+                          <div className="flex items-center justify-between mb-1">
+                            <h5 className="text-xs font-medium text-gray-700">{stat.title}</h5>
+                            <span className="text-sm font-bold text-blue-600">{stat.count}</span>
+                          </div>
+                          <p className="text-xs text-gray-500">Status: {stat.status}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </aside>
       </div>
     </div>
   );
