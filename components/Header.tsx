@@ -22,7 +22,9 @@ const Header = () => (
             key={item.href}
             href={item.href}
             aria-disabled={item.disabled}
-            className={	ransition hover:text-sky-200 }
+            className={`transition hover:text-sky-200 ${
+              item.disabled ? "cursor-not-allowed opacity-50" : ""
+            }`}
           >
             {item.label}
           </Link>

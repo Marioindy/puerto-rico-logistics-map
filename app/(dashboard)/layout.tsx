@@ -17,7 +17,11 @@ const DashboardLayout = ({ children }: { children: ReactNode }) => (
             key={link.href}
             href={link.href}
             aria-disabled={link.disabled}
-            className={ounded-md px-3 py-2 transition }
+            className={`rounded-md px-3 py-2 transition ${
+              link.disabled
+                ? "cursor-not-allowed bg-transparent text-slate-600"
+                : "hover:bg-slate-900 hover:text-sky-200"
+            }`}
           >
             {link.label}
           </Link>
