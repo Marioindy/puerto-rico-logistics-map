@@ -117,7 +117,7 @@ const FacilityInfoPanel: React.FC<FacilityInfoPanelProps> = ({
   }
 
   return (
-    <div className="absolute top-4 right-4 w-96 max-h-[calc(100vh-2rem)] bg-slate-900/95 backdrop-blur-sm border border-slate-700 rounded-lg shadow-xl z-50 overflow-hidden">
+    <div className="h-full flex flex-col bg-slate-950/70">
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-slate-700">
         <div>
@@ -133,7 +133,7 @@ const FacilityInfoPanel: React.FC<FacilityInfoPanelProps> = ({
       </div>
 
       {/* Content */}
-      <div className="overflow-y-auto max-h-[calc(100vh-8rem)]">
+      <div className="flex-1 overflow-y-auto">
         <div className="p-4 space-y-3">
           {selectedPin.data.boxes.map(renderBox)}
         </div>

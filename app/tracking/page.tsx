@@ -1,13 +1,16 @@
 "use client";
 
 import InteractiveMap from "@/components/InteractiveMap";
+import FacilityInfoPanel from "@/components/FacilityInfoPanel";
 import { Suspense, useState, useMemo } from "react";
 import { Search, Filter } from "lucide-react";
 import { getAllMarkers } from "@/lib/facilityData";
+import type { SelectedPin } from "@/types/facilities";
 
 const TrackingPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedFilters, setSelectedFilters] = useState<Record<string, boolean>>({});
+  const [selectedPin, setSelectedPin] = useState<SelectedPin | null>(null);
 
   const allMarkers = getAllMarkers();
 
@@ -80,7 +83,7 @@ const TrackingPage = () => {
           </p>
         </header>
 
-        <div className="grid gap-6 lg:grid-cols-[300px_1fr_400px]">
+        <div className={`grid gap-4 ${selectedPin ? 'lg:grid-cols-[280px_1fr_400px]' : 'lg:grid-cols-[280px_1fr]'}`}>
           {/* Left Filter Panel */}
           <aside className="rounded-xl border border-slate-800 bg-slate-950/70 p-4">
             <div className="flex items-center gap-2 mb-4">
@@ -128,47 +131,53 @@ const TrackingPage = () => {
             <div className="mt-6 text-xs text-slate-500">
               Showing {filteredMarkers.length} of {allMarkers.length} facilities
             </div>
+
+            {/* Facility Statistics - Only show when no facility is selected */}
+            {!selectedPin && (
+              <div className="mt-8 pt-6 border-t border-slate-700">
+                <h3 className="text-sm font-semibold uppercase text-slate-300 mb-4">Facility Statistics</h3>
+                <div className="space-y-3">
+                  {operationalStats.map((stat) => (
+                    <div key={stat.title} className="rounded-lg border border-slate-800 bg-slate-950/80 p-3">
+                      <div className="flex items-center justify-between mb-1">
+                        <h4 className="text-xs font-medium text-slate-200">{stat.title}</h4>
+                        <span className="text-sm font-bold text-sky-400">{stat.count}</span>
+                      </div>
+                      <p className="text-xs text-slate-400">Status: {stat.status}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </aside>
 
-          {/* Main Map Area */}
-          <section className="flex h-[600px] flex-col gap-4 rounded-xl border border-slate-800 bg-slate-950/70 p-4 shadow-lg">
+          {/* Main Map Area - Now takes up most of the screen */}
+          <section className="flex h-[calc(100vh-12rem)] flex-col gap-4 rounded-xl border border-slate-800 bg-slate-950/70 p-4 shadow-lg relative">
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-sm font-semibold uppercase text-slate-300">Puerto Rico Logistics Map</h2>
-                <p className="text-xs text-slate-500">Interactive facility tracking and monitoring</p>
+                <p className="text-xs text-slate-500">Interactive facility tracking and monitoring - Click markers for details</p>
               </div>
             </div>
             <div className="flex-1 overflow-hidden rounded-lg">
               <Suspense fallback={<div className="flex h-full items-center justify-center text-slate-500">Loading logistics grid...</div>}>
-                <InteractiveMap />
+                <div className="w-full h-full">
+                  <InteractiveMap onMarkerClick={setSelectedPin} />
+                </div>
               </Suspense>
             </div>
           </section>
 
-          {/* Right Information Panel */}
-          <aside className="flex flex-col gap-4 rounded-xl border border-slate-800 bg-slate-950/70 p-4">
-            <h2 className="text-sm font-semibold uppercase text-slate-300">Facility Statistics</h2>
-            <div className="space-y-3">
-              {operationalStats.map((stat) => (
-                <div key={stat.title} className="rounded-lg border border-slate-800 bg-slate-950/80 p-3">
-                  <div className="flex items-center justify-between mb-1">
-                    <h3 className="text-sm font-medium text-slate-200">{stat.title}</h3>
-                    <span className="text-lg font-bold text-sky-400">{stat.count}</span>
-                  </div>
-                  <p className="text-xs text-slate-400">Status: {stat.status}</p>
-                </div>
-              ))}
-            </div>
-
-            <div className="mt-4 p-3 rounded-lg border border-slate-700 bg-slate-900/50">
-              <h3 className="text-xs font-semibold uppercase text-slate-400 mb-2">Quick Actions</h3>
-              <div className="text-xs text-slate-300 space-y-1">
-                <p>• Click markers for facility details</p>
-                <p>• Use filters to narrow search</p>
-                <p>• Search by name or type</p>
-              </div>
-            </div>
-          </aside>
+          {/* Right Facility Information Panel - Only show when a facility is selected */}
+          {selectedPin && (
+            <aside className="rounded-xl border border-slate-800 bg-slate-950/70 overflow-hidden">
+              <FacilityInfoPanel
+                selectedPin={selectedPin}
+                onClose={() => setSelectedPin(null)}
+                isVisible={true}
+              />
+            </aside>
+          )}
         </div>
       </div>
     </div>

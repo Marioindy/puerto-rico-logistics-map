@@ -2,7 +2,6 @@
 
 import React, { useState, useCallback } from 'react';
 import { GoogleMap, useLoadScript, Marker } from "@react-google-maps/api";
-import FacilityInfoPanel from './FacilityInfoPanel';
 import { getAllMarkers } from '@/lib/facilityData';
 import type { SelectedPin } from '@/types/facilities';
 
@@ -120,6 +119,7 @@ export interface InteractiveMapProps {
   apiKey?: string;
   center?: { lat: number; lng: number };
   zoom?: number;
+  onMarkerClick?: (marker: SelectedPin) => void;
 }
 
 const fallbackCenter = { lat: 18.2208, lng: -66.5901 }; // Center of Puerto Rico
@@ -141,11 +141,11 @@ const ErrorState = () => (
 const InteractiveMap: React.FC<InteractiveMapProps> = ({
   apiKey,
   center = fallbackCenter,
-  zoom = fallbackZoom
+  zoom = fallbackZoom,
+  onMarkerClick
 }) => {
-  const [selectedPin, setSelectedPin] = useState<SelectedPin | null>(null);
   const [map, setMap] = useState<google.maps.Map | null>(null);
-  
+
   // Get markers from data service
   const markers = getAllMarkers();
 
@@ -162,16 +162,14 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({
   }, []);
 
   const handleMarkerClick = useCallback((marker: SelectedPin) => {
-    setSelectedPin(marker);
+    if (onMarkerClick) {
+      onMarkerClick(marker);
+    }
     if (map) {
       map.panTo(marker.coordinates);
       map.setZoom(12);
     }
-  }, [map]);
-
-  const handleClosePanel = useCallback(() => {
-    setSelectedPin(null);
-  }, []);
+  }, [map, onMarkerClick]);
 
   if (!googleMapsApiKey) {
     return (
@@ -190,40 +188,32 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({
   }
 
   return (
-    <div className="relative w-full h-full">
-      <GoogleMap
-        mapContainerStyle={containerStyle}
-        center={center}
-        zoom={zoom}
-        options={mapOptions as google.maps.MapOptions}
-        onLoad={onMapLoad}
-      >
-        {markers.map((marker) => (
-          <Marker
-            key={marker.id}
-            position={marker.coordinates}
-            onClick={() => handleMarkerClick(marker)}
-            icon={{
-              path: google.maps.SymbolPath.CIRCLE,
-              scale: 8,
-              fillColor: marker.type === 'airport' ? '#3B82F6' : 
-                        marker.type === 'port' ? '#10B981' : 
-                        marker.type === 'warehouse' ? '#F59E0B' : '#6B7280',
-              fillOpacity: 1,
-              strokeColor: '#FFFFFF',
-              strokeWeight: 2,
-            }}
-            title={marker.data?.title}
-          />
-        ))}
-      </GoogleMap>
-
-      <FacilityInfoPanel
-        selectedPin={selectedPin}
-        onClose={handleClosePanel}
-        isVisible={!!selectedPin}
-      />
-    </div>
+    <GoogleMap
+      mapContainerStyle={containerStyle}
+      center={center}
+      zoom={zoom}
+      options={mapOptions as google.maps.MapOptions}
+      onLoad={onMapLoad}
+    >
+      {markers.map((marker) => (
+        <Marker
+          key={marker.id}
+          position={marker.coordinates}
+          onClick={() => handleMarkerClick(marker)}
+          icon={{
+            path: google.maps.SymbolPath.CIRCLE,
+            scale: 8,
+            fillColor: marker.type === 'airport' ? '#3B82F6' :
+                      marker.type === 'port' ? '#10B981' :
+                      marker.type === 'warehouse' ? '#F59E0B' : '#6B7280',
+            fillOpacity: 1,
+            strokeColor: '#FFFFFF',
+            strokeWeight: 2,
+          }}
+          title={marker.data?.title}
+        />
+      ))}
+    </GoogleMap>
   );
 };
 
