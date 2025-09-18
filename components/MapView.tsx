@@ -13,7 +13,7 @@ const mapOptions = {
   styles: []
 };
 
-const libraries = ["core", "geometry", "places", "visualization"] as const;
+const libraries: ("core" | "geometry" | "places" | "visualization")[] = ["core", "geometry", "places", "visualization"];
 
 export type MapViewProps = {
   apiKey?: string;
@@ -31,7 +31,7 @@ const loaderId = "google-maps-primary";
 
 const LoadingState = () => (
   <div className="flex h-full w-full items-center justify-center bg-slate-900 text-slate-400">
-    <span>Loading geospatial grid…</span>
+    <span>Loading geospatial grid...</span>
   </div>
 );
 
@@ -53,9 +53,9 @@ export const MapView = ({
   const googleMapsApiKey = apiKey ?? process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
   const { isLoaded, loadError } = useLoadScript({
-    googleMapsApiKey,
+    googleMapsApiKey: googleMapsApiKey!,
     id: loaderId,
-    libraries: libraries as unknown as string[]
+    libraries: libraries
   });
 
   if (!googleMapsApiKey) {

@@ -73,10 +73,34 @@ Use these TypeScript path aliases instead of relative imports:
 3. Implement functions in `convex/functions/domain/`
 4. Import and use in frontend components
 
+### Adding New Facilities to Map
+1. Add facility data to `lib/facilityData.ts`
+2. Ensure proper typing with `FacilityData` interface
+3. Include coordinates for map placement
+4. Use appropriate facility type for color coding
+
 ### Styling
 - Use Tailwind CSS classes
 - Global styles in `styles/globals.css`
 - CSS variables for theme consistency
+
+## Interactive Map System
+
+### Components
+- `InteractiveMap.tsx` - Main map with Google Maps integration
+- `FacilityInfoPanel.tsx` - Right-side facility information panel
+- `MapView.tsx` - Original basic map component (preserved)
+
+### Data Management
+- `lib/facilityData.ts` - Centralized facility data service
+- `types/facilities.ts` - TypeScript interfaces for facility data
+- Sample data includes airports, ports, and logistics facilities
+
+### Map Features
+- Color-coded markers by facility type
+- Interactive facility information panels
+- Custom Google Maps styling
+- Responsive design for mobile/desktop
 
 ## Debugging
 - Use browser dev tools for frontend debugging
