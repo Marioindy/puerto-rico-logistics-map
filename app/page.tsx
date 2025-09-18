@@ -18,7 +18,7 @@ const LandingPage = () => (
         </p>
         <div className="flex flex-col gap-3 sm:flex-row">
           <Link
-            href="/(dashboard)/tracking"
+            href="/tracking"
             className="inline-flex items-center justify-center rounded-md bg-sky-500 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-sky-400"
           >
             Open the tracking workspace
