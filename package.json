@@ -9,6 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@react-google-maps/api": "^2.20.7",
     "autoprefixer": "^10.4.21",
     "convex": "^1.27.0",
     "lucide-react": "^0.544.0",
