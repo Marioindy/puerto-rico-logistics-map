@@ -1,12 +1,12 @@
 @import "tailwindcss";
 
 :root {
-  color-scheme: dark;
-  --background: #020617;
-  --foreground: #e2e8f0;
-  --muted: #1e293b;
-  --accent: #0ea5e9;
-  --border: #1e293b;
+  color-scheme: light;
+  --background: #ffffff;
+  --foreground: #111827;
+  --muted: #f3f4f6;
+  --accent: #2563eb;
+  --border: #e5e7eb;
   --font-sans: var(--font-sans, system-ui, -apple-system, BlinkMacSystemFont);
   --font-mono: var(--font-mono, "JetBrains Mono", ui-monospace, SFMono-Regular);
 }
