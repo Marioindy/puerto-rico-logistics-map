@@ -30,12 +30,14 @@ const iconMap = {
 };
 
 const colorMap = {
-  blue: 'bg-blue-500/20 text-blue-300 border-blue-500/40',
-  green: 'bg-green-500/20 text-green-300 border-green-500/40',
-  orange: 'bg-orange-500/20 text-orange-300 border-orange-500/40',
-  purple: 'bg-purple-500/20 text-purple-300 border-purple-500/40',
-  red: 'bg-red-500/20 text-red-300 border-red-500/40',
-  gray: 'bg-gray-500/20 text-gray-300 border-gray-500/40'
+  blue: 'bg-blue-50 text-blue-700 border-blue-200',
+  green: 'bg-green-50 text-green-700 border-green-200',
+  orange: 'bg-orange-50 text-orange-700 border-orange-200',
+  purple: 'bg-purple-50 text-purple-700 border-purple-200',
+  red: 'bg-red-50 text-red-700 border-red-200',
+  gray: 'bg-gray-50 text-gray-700 border-gray-200',
+  cyan: 'bg-cyan-50 text-cyan-700 border-cyan-200',
+  indigo: 'bg-indigo-50 text-indigo-700 border-indigo-200'
 };
 
 const FacilityInfoPanel: React.FC<FacilityInfoPanelProps> = ({ 
@@ -54,12 +56,12 @@ const FacilityInfoPanel: React.FC<FacilityInfoPanelProps> = ({
 
   const renderVariable = (variable: FacilityVariable) => {
     const IconComponent = variable.icon ? iconMap[variable.icon as keyof typeof iconMap] : null;
-    const colorClass = variable.color ? colorMap[variable.color as keyof typeof colorMap] : 'bg-slate-500/20 text-slate-300 border-slate-500/40';
+    const colorClass = variable.color ? colorMap[variable.color as keyof typeof colorMap] : 'bg-gray-50 text-gray-700 border-gray-200';
 
     if (variable.type === 'nested' && variable.subVariables) {
       return (
         <div key={variable.key} className="space-y-2">
-          <h4 className="text-sm font-medium text-slate-200">{variable.label}</h4>
+          <h4 className="text-sm font-medium text-gray-800">{variable.label}</h4>
           <div className="space-y-2 pl-4">
             {variable.subVariables.map(subVar => (
               <div key={subVar.key} className={`flex items-center gap-2 rounded-lg border p-2 ${colorClass}`}>
@@ -75,11 +77,11 @@ const FacilityInfoPanel: React.FC<FacilityInfoPanelProps> = ({
     }
 
     return (
-      <div key={variable.key} className="flex justify-between items-center py-2 border-b border-slate-700/50 last:border-b-0">
-        <span className="text-sm text-slate-300">{variable.label}</span>
-        <span className="text-sm text-slate-100 font-medium">
+      <div key={variable.key} className="flex justify-between items-center py-2 border-b border-gray-200 last:border-b-0">
+        <span className="text-sm text-gray-600">{variable.label}</span>
+        <span className="text-sm text-gray-900 font-medium">
           {variable.value}
-          {variable.unit && <span className="text-xs text-slate-400 ml-1">{variable.unit}</span>}
+          {variable.unit && <span className="text-xs text-gray-500 ml-1">{variable.unit}</span>}
         </span>
       </div>
     );
@@ -88,10 +90,10 @@ const FacilityInfoPanel: React.FC<FacilityInfoPanelProps> = ({
   const renderBox = (box: FacilityBox) => {
     const isExpanded = expandedBoxes[box.id];
     const IconComponent = iconMap[box.icon as keyof typeof iconMap] || Info;
-    const colorClass = colorMap[box.color as keyof typeof colorMap] || 'bg-slate-500/20 text-slate-300 border-slate-500/40';
+    const colorClass = colorMap[box.color as keyof typeof colorMap] || 'bg-gray-50 text-gray-700 border-gray-200';
 
     return (
-      <div key={box.id} className="border border-slate-700 rounded-lg overflow-hidden">
+      <div key={box.id} className="border border-gray-200 rounded-lg overflow-hidden">
         <button
           onClick={() => toggleBox(box.id)}
           className={`w-full flex items-center justify-between p-3 ${colorClass} hover:opacity-80 transition-opacity`}
@@ -102,9 +104,9 @@ const FacilityInfoPanel: React.FC<FacilityInfoPanelProps> = ({
           </div>
           {isExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
         </button>
-        
+
         {isExpanded && (
-          <div className="p-3 bg-slate-900/50 space-y-2">
+          <div className="p-3 bg-gray-50/50 space-y-2">
             {box.variables.map(renderVariable)}
           </div>
         )}
@@ -117,16 +119,16 @@ const FacilityInfoPanel: React.FC<FacilityInfoPanelProps> = ({
   }
 
   return (
-    <div className="h-full flex flex-col bg-slate-950/70">
+    <div className="h-full flex flex-col bg-white">
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-slate-700">
+      <div className="flex items-center justify-between p-4 border-b border-gray-200">
         <div>
-          <h2 className="text-lg font-semibold text-white">{selectedPin.data.title}</h2>
-          <p className="text-sm text-slate-400">{selectedPin.data.type}</p>
+          <h2 className="text-lg font-semibold text-gray-900">{selectedPin.data.title}</h2>
+          <p className="text-sm text-gray-600">{selectedPin.data.type}</p>
         </div>
         <button
           onClick={onClose}
-          className="text-slate-400 hover:text-white transition-colors"
+          className="text-gray-400 hover:text-gray-600 transition-colors"
         >
           <X className="h-5 w-5" />
         </button>

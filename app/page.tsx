@@ -2,98 +2,100 @@ import Link from "next/link";
 import MapView from "@/components/MapView";
 
 const LandingPage = () => (
-  <div className="mx-auto flex w-full max-w-6xl flex-col gap-16 px-6 py-12">
-    <section className="grid gap-8 lg:grid-cols-[1.25fr_1fr] lg:items-start">
-      <div className="flex flex-col gap-6">
-        <span className="w-fit rounded-full border border-sky-500/30 bg-sky-500/10 px-3 py-1 text-xs uppercase tracking-wider text-sky-200">
-          Puerto Rico Logistics Grid
-        </span>
-        <h1 className="text-balance text-4xl font-semibold leading-tight text-white md:text-5xl">
-          Coordinate disaster response, commerce, and infrastructure missions from a unified map.
-        </h1>
-        <p className="text-pretty text-base text-slate-300 md:text-lg">
-          This workspace stitches Convex, Amplify, and Google Maps together so government teams can monitor cargo, ports,
-          and supply chains in real time. Start with the skeleton dashboards, plug in your data sources, and iterate without
-          rethinking the architecture.
-        </p>
-        <div className="flex flex-col gap-3 sm:flex-row">
-          <Link
-            href="/tracking"
-            className="inline-flex items-center justify-center rounded-md bg-sky-500 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-sky-400"
-          >
-            Open the tracking workspace
-          </Link>
-          <Link
-            href="#stack"
-            className="inline-flex items-center justify-center rounded-md border border-slate-700 px-4 py-2 text-sm font-semibold text-slate-200 transition hover:border-slate-500 hover:text-white"
-          >
-            Review the architecture
-          </Link>
+  <div className="min-h-screen bg-white text-gray-900">
+    <div className="mx-auto flex w-full max-w-6xl flex-col gap-16 px-6 py-12">
+      <section className="grid gap-8 lg:grid-cols-[1.25fr_1fr] lg:items-start">
+        <div className="flex flex-col gap-6">
+          <span className="w-fit rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs uppercase tracking-wider text-blue-700">
+            Puerto Rico Logistics Grid
+          </span>
+          <h1 className="text-balance text-4xl font-semibold leading-tight text-gray-900 md:text-5xl">
+            Coordinate disaster response, commerce, and infrastructure missions from a unified map.
+          </h1>
+          <p className="text-pretty text-base text-gray-600 md:text-lg">
+            This workspace stitches Convex, Amplify, and Google Maps together so government teams can monitor cargo, ports,
+            and supply chains in real time. Start with the skeleton dashboards, plug in your data sources, and iterate without
+            rethinking the architecture.
+          </p>
+          <div className="flex flex-col gap-3 sm:flex-row">
+            <Link
+              href="/tracking"
+              className="inline-flex items-center justify-center rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-700"
+            >
+              Open the tracking workspace
+            </Link>
+            <Link
+              href="#stack"
+              className="inline-flex items-center justify-center rounded-md border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 transition hover:border-gray-400 hover:text-gray-900"
+            >
+              Review the architecture
+            </Link>
+          </div>
         </div>
-      </div>
-      <div className="aspect-[4/3] overflow-hidden rounded-xl border border-slate-800 bg-slate-900/60 shadow-lg">
-        <MapView>
-          {/* Map overlays will be injected through dashboard features. */}
-        </MapView>
-      </div>
-    </section>
+        <div className="aspect-[4/3] overflow-hidden rounded-xl border border-gray-200 bg-gray-50 shadow-lg">
+          <MapView>
+            {/* Map overlays will be injected through dashboard features. */}
+          </MapView>
+        </div>
+      </section>
 
-    <section id="stack" className="grid gap-8 rounded-xl border border-slate-800 bg-slate-900/40 p-8 shadow-xl">
-      <h2 className="text-2xl font-semibold text-white">Stack blueprint</h2>
-      <div className="grid gap-6 md:grid-cols-3">
-        {[
-          {
-            title: "Next.js App Router",
-            description:
-              "Server-centric routing with React Server Components, co-located layouts, and streaming dashboards.",
-            href: "https://nextjs.org/docs/app"
-          },
-          {
-            title: "Convex backend",
-            description:
-              "Data schema, auth, and realtime queries wired for logistics metadata, incidents, and tasks.",
-            href: "https://docs.convex.dev"
-          },
-          {
-            title: "AWS Amplify integration",
-            description:
-              "Secure file exchange, notification channels, and partner APIs via Amplify categories.",
-            href: "https://docs.amplify.aws"
-          },
-          {
-            title: "Google Maps platform",
-            description:
-              "Geospatial overlays for cargo lanes, depots, and emergency staging areas.",
-            href: "https://developers.google.com/maps"
-          },
-          {
-            title: "Tailwind CSS",
-            description:
-              "Design tokens for quick iteration on dashboards without context switching.",
-            href: "https://tailwindcss.com/docs"
-          },
-          {
-            title: "TypeScript everywhere",
-            description:
-              "Shared interfaces flow from Convex to Next components and Amplify clients via autogenerated types.",
-            href: "https://www.typescriptlang.org/docs"
-          }
-        ].map((item) => (
-          <Link
-            key={item.title}
-            href={item.href}
-            target="_blank"
-            rel="noreferrer"
-            className="group flex flex-col gap-2 rounded-lg border border-slate-800 bg-slate-950/60 p-5 transition hover:border-sky-500/60 hover:bg-slate-900/80"
-          >
-            <span className="text-sm font-semibold uppercase tracking-wide text-sky-200 group-hover:text-sky-100">
-              {item.title}
-            </span>
-            <p className="text-sm text-slate-300 group-hover:text-slate-200">{item.description}</p>
-          </Link>
-        ))}
-      </div>
-    </section>
+      <section id="stack" className="grid gap-8 rounded-xl border border-gray-200 bg-gray-50 p-8 shadow-lg">
+        <h2 className="text-2xl font-semibold text-gray-900">Stack blueprint</h2>
+        <div className="grid gap-6 md:grid-cols-3">
+          {[
+            {
+              title: "Next.js App Router",
+              description:
+                "Server-centric routing with React Server Components, co-located layouts, and streaming dashboards.",
+              href: "https://nextjs.org/docs/app"
+            },
+            {
+              title: "Convex backend",
+              description:
+                "Data schema, auth, and realtime queries wired for logistics metadata, incidents, and tasks.",
+              href: "https://docs.convex.dev"
+            },
+            {
+              title: "AWS Amplify integration",
+              description:
+                "Secure file exchange, notification channels, and partner APIs via Amplify categories.",
+              href: "https://docs.amplify.aws"
+            },
+            {
+              title: "Google Maps platform",
+              description:
+                "Geospatial overlays for cargo lanes, depots, and emergency staging areas.",
+              href: "https://developers.google.com/maps"
+            },
+            {
+              title: "Tailwind CSS",
+              description:
+                "Design tokens for quick iteration on dashboards without context switching.",
+              href: "https://tailwindcss.com/docs"
+            },
+            {
+              title: "TypeScript everywhere",
+              description:
+                "Shared interfaces flow from Convex to Next components and Amplify clients via autogenerated types.",
+              href: "https://www.typescriptlang.org/docs"
+            }
+          ].map((item) => (
+            <Link
+              key={item.title}
+              href={item.href}
+              target="_blank"
+              rel="noreferrer"
+              className="group flex flex-col gap-2 rounded-lg border border-gray-200 bg-white p-5 transition hover:border-blue-300 hover:bg-blue-50"
+            >
+              <span className="text-sm font-semibold uppercase tracking-wide text-blue-600 group-hover:text-blue-700">
+                {item.title}
+              </span>
+              <p className="text-sm text-gray-600 group-hover:text-gray-700">{item.description}</p>
+            </Link>
+          ))}
+        </div>
+      </section>
+    </div>
   </div>
 );
 

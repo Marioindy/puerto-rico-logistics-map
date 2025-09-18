@@ -107,3 +107,29 @@ Use these TypeScript path aliases instead of relative imports:
 - Check Convex dashboard for backend logs
 - Network tab for API call inspection
 - Console for client-side errors
+
+## Design System Changes
+
+### Light Mode Implementation (Latest Update)
+**Requirement:** Convert entire website to light mode theme with improved layout design.
+
+**Layout Changes:**
+- **Map Display:** Map now takes almost the entire screen for maximum visibility
+- **Left Menu:** Converted to floating overlay that sits on top of the map
+- **Right Panel:** Remains as main layer component for facility information
+- **Theme:** Complete conversion from dark mode to light mode across all components
+
+**Technical Implementation:**
+- Updated color scheme from slate-950/dark to white/light backgrounds
+- Changed text colors from light (white/slate-200) to dark (gray-900/slate-800)
+- Modified border colors from slate-800 to gray-200/gray-300
+- Updated interactive elements (buttons, inputs) for light theme accessibility
+- Implemented floating positioning for left filter panel with backdrop blur
+- Map container now uses full viewport dimensions minus minimal padding
+
+**Components Affected:**
+- `/app/tracking/page.tsx` - Main tracking page layout and theme
+- `/app/page.tsx` - Landing page light mode conversion
+- `/components/FacilityInfoPanel.tsx` - Light theme colors
+- `/components/InteractiveMap.tsx` - Map styling adjustments
+- All other components requiring theme updates
