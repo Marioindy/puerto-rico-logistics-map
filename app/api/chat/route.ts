@@ -1,11 +1,10 @@
 ﻿import { NextResponse } from "next/server";
-import { secret } from "@aws-amplify/backend";
 
 export async function POST(req: Request) {
   try {
-    const apiKey = secret("PPLX");
+    const apiKey = process.env.PPLX;
     if (!apiKey) {
-      console.error("PPLX secret not found or empty");
+      console.error("PPLX environment variable not found");
       return NextResponse.json({ error: "Missing PPLX API key" }, { status: 500 });
     }
 

@@ -8,7 +8,8 @@ applications:
             - npm install
         build:
           commands:
-            # Make public environment variables available to Next.js
+            # Make environment variables available to Next.js
+            - env | grep -e PPLX >> .env.production
             - env | grep -e NEXT_PUBLIC_ >> .env.production
             - npm run build
       artifacts:
