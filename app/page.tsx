@@ -148,10 +148,10 @@ const LandingPage = () => (
 
     <section id="contact" className="mx-auto w-full max-w-5xl px-6">
       <div className="rounded-3xl border border-[#d7d1c3] bg-white p-8 shadow-md md:p-12">
-        <h3 className="font-serif text-3xl font-semibold text-[#1a1a1a]">Let's build the grid together</h3>
+        <h3 className="font-serif text-3xl font-semibold text-[#1a1a1a]">Let&rsquo;s build the grid together</h3>
         <p className="mt-4 text-sm text-[#4d4e40] md:text-base">
           Drop us a line at <a className="font-medium text-[#4b5a2a]" href="mailto:logistics@area.gov">logistics@area.gov</a>
-          {' '}or call +1 (787) 555-0199. We'll share a tailored walkthrough of the dashboards powering Puerto Rico's logistics
+          {' '}or call +1 (787) 555-0199. We&rsquo;ll share a tailored walkthrough of the dashboards powering Puerto Rico&rsquo;s logistics
           network.
         </p>
       </div>
@@ -160,6 +160,7 @@ const LandingPage = () => (
 );
 
 export default LandingPage;
+
 
 
 
