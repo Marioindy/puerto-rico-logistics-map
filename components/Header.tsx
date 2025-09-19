@@ -1,17 +1,17 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 import { NavigationItem } from "@/types/navigation";
 
 const navItems: NavigationItem[] = [
-  { href: "/#benefits", label: "Benefits" },
+  { href: "/#benefits", label: "RFI Map" },
   { href: "/#specs", label: "Specifications" },
-  { href: "/#how", label: "How-to" },
+  { href: "/#how", label: "Info" },
   { href: "/#contact", label: "Contact Us" }
 ];
 
 const Header = () => (
   <header className="sticky top-0 z-30 border-b border-[#e3dcc9] bg-[#f8f7f3]/95 backdrop-blur">
     <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-6">
-      <Link href="/" className="text-lg font-semibold tracking-tight text-[#1b1c16]">
+      <Link href="/#rfi-map" className="text-lg font-semibold tracking-tight text-[#1b1c16]">
         RFI Map
       </Link>
       <nav className="hidden items-center gap-8 text-sm text-[#2e2f25] md:flex">
@@ -36,4 +36,5 @@ const Header = () => (
 );
 
 export default Header;
+
 

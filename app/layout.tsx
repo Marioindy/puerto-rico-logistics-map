@@ -1,4 +1,4 @@
-﻿import type { Metadata } from "next";
+import type { Metadata } from "next";
 import {
   Inter,
   JetBrains_Mono,
@@ -15,7 +15,7 @@ const playfair = Playfair_Display({
   weight: ["400", "500", "600", "700"]
 });
 
-export const metadata: Metadata = {
+export const metadata: Metadata = {\n  icons: { icon: "/favicon.ico" },
   title: {
     default: "Puerto Rico Logistics Grid",
     template: "%s | PR Logistics Grid"
@@ -44,4 +44,5 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => (
 );
 
 export default RootLayout;
+
 
