@@ -1,4 +1,5 @@
-﻿import Image from "next/image";`r`nimport MapView from "@/components/MapView";
+﻿import Image from "next/image";
+import MapView from "@/components/MapView";
 
 const brandLogos = [
   "Logio",
@@ -173,6 +174,7 @@ const LandingPage = () => (
 );
 
 export default LandingPage;
+
 
 
 
