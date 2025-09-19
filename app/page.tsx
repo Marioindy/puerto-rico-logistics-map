@@ -73,7 +73,7 @@ const LandingPage = () => (
       <div className="rounded-[28px] border border-[#e3dcc9] bg-white p-4 shadow-md">
         <div className="flex items-center justify-between px-2 pt-2 pb-4">
           <h2 className="font-serif text-2xl md:text-3xl text-[#1a1a1a]">RFI Map Preview</h2>
-          <a href="/tracking" className="inline-flex items-center rounded-full bg-[#4b5a2a] px-4 py-2 text-sm font-semibold text-[#f6f4ea] hover:bg-[#3f4b22]">Open Full Map &rarr;</a>
+          <a href="/rfi/map" className="inline-flex items-center rounded-full bg-[#4b5a2a] px-4 py-2 text-sm font-semibold text-[#f6f4ea] hover:bg-[#3f4b22]">Open Full Map &rarr;</a>
         </div>
         <div className="h-[420px] overflow-hidden rounded-2xl border border-[#e3dcc9] bg-[#faf9f5]">
           <MapView zoom={8} />
@@ -174,6 +174,7 @@ const LandingPage = () => (
 );
 
 export default LandingPage;
+
 
 
 
