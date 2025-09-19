@@ -1,4 +1,4 @@
-import Hero from "@/components/sections/Hero";
+﻿import Hero from "@/components/sections/Hero";
 import RFIPreview from "@/components/sections/RFIPreview";
 import Benefits from "@/components/sections/Benefits";
 import SpecsRail from "@/components/sections/SpecsRail";
@@ -19,3 +19,4 @@ export default async function HomePage() {
     </div>
   );
 }
+

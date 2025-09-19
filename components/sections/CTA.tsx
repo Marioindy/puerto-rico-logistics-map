@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import type { CTAContent } from "@/types/content";
 
 export default function CTA({ title, body, cta }: CTAContent) {
@@ -12,3 +12,4 @@ export default function CTA({ title, body, cta }: CTAContent) {
     </section>
   );
 }
+

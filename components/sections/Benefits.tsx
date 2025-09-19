@@ -1,4 +1,4 @@
-import type { BenefitsContent } from "@/types/content";
+﻿import type { BenefitsContent } from "@/types/content";
 
 export default function Benefits({ title, body, items, imageUrl }: BenefitsContent) {
   return (
@@ -28,3 +28,4 @@ export default function Benefits({ title, body, items, imageUrl }: BenefitsConte
     </section>
   );
 }
+

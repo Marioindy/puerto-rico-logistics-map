@@ -1,4 +1,4 @@
-import type { SpecsRailContent } from "@/types/content";
+﻿import type { SpecsRailContent } from "@/types/content";
 import Link from "next/link";
 
 export default function SpecsRail({ imageUrl, links }: SpecsRailContent) {
@@ -18,3 +18,4 @@ export default function SpecsRail({ imageUrl, links }: SpecsRailContent) {
     </section>
   );
 }
+

@@ -1,4 +1,4 @@
-import type { HomeContent } from "@/types/content";
+ï»¿import type { HomeContent } from "@/types/content";
 
 export const homeContent: HomeContent = {
   hero: {
@@ -44,8 +44,9 @@ export const homeContent: HomeContent = {
     cta: { label: "Learn More ?", href: "#contact" }
   },
   contact: {
-    title: "Let’s build the grid together",
+    title: "Letï¿½s build the grid together",
     email: "team@rfi-map.local",
     phone: "+1 (787) 555-0199"
   }
 };
+

@@ -1,4 +1,4 @@
-import Link from "next/link";
+ï»¿import Link from "next/link";
 import type { ContactContent } from "@/types/content";
 
 export default function Contact({ title, email, phone }: ContactContent) {
@@ -8,9 +8,10 @@ export default function Contact({ title, email, phone }: ContactContent) {
         <h3 className="font-serif text-3xl font-semibold text-[#1a1a1a]">{title}</h3>
         <p className="mt-4 text-sm text-[#4d4e40] md:text-base">
           Drop us a line at <Link className="font-medium text-[#4b5a2a]" href={`mailto:${email}`}>{email}</Link>
-          {" "}or call {phone}. We’ll share a tailored walkthrough of the dashboards powering Puerto Rico’s logistics network.
+          {" "}or call {phone}. Weï¿½ll share a tailored walkthrough of the dashboards powering Puerto Ricoï¿½s logistics network.
         </p>
       </div>
     </section>
   );
 }
+

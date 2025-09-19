@@ -1,4 +1,4 @@
-import type { RFIPreviewContent } from "@/types/content";
+﻿import type { RFIPreviewContent } from "@/types/content";
 import MapView from "@/components/MapView";
 import Link from "next/link";
 
@@ -19,3 +19,4 @@ export default function RFIPreview({ title, cta, zoom = 8 }: RFIPreviewContent) 
     </section>
   );
 }
+

@@ -1,4 +1,4 @@
-﻿"use client";
+﻿﻿"use client";
 
 import React, { useState, useCallback } from 'react';
 import { GoogleMap, useLoadScript, Marker } from "@react-google-maps/api";
@@ -115,7 +115,13 @@ const mapOptions = {
 const libraries: ("core" | "geometry" | "places" | "visualization")[] = ["core", "geometry", "places", "visualization"];
 
 
-export interface InteractiveMapProps {\n  apiKey?: string;\n  center?: { lat: number; lng: number };\n  zoom?: number;\n  markers?: SelectedPin[];\n  onMarkerClick?: (marker: SelectedPin) => void;\n};
+export interface InteractiveMapProps {
+  apiKey?: string;
+  center?: { lat: number; lng: number };
+  zoom?: number;
+  markers?: SelectedPin[];
+  onMarkerClick?: (marker: SelectedPin) => void;
+};
   zoom?: number;
   onMarkerClick?: (marker: SelectedPin) => void;
 }
@@ -136,10 +142,19 @@ const ErrorState = () => (
   </div>
 );
 
-const InteractiveMap: React.FC<InteractiveMapProps> = ({\n  apiKey,\n  center = fallbackCenter,\n  zoom = fallbackZoom,\n  markers,\n  onMarkerClick\n}) => {
+const InteractiveMap: React.FC<InteractiveMapProps> = ({
+  apiKey,
+  center = fallbackCenter,
+  zoom = fallbackZoom,
+  markers,
+  onMarkerClick
+}) => {
   const [map, setMap] = useState<google.maps.Map | null>(null);
 
-    // Resolve markers to render (prop overrides data service)\n  const markersToRender: SelectedPin[] = markers ?? getAllMarkers();\n\n  const googleMapsApiKey = apiKey ?? process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+    // Resolve markers to render (prop overrides data service)
+  const markersToRender: SelectedPin[] = markers ?? getAllMarkers();
+
+  const googleMapsApiKey = apiKey ?? process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
   const { isLoaded, loadError } = useLoadScript({
     googleMapsApiKey: googleMapsApiKey!,
@@ -208,3 +223,5 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({\n  apiKey,\n  center = 
 };
 
 export default InteractiveMap;
+
+

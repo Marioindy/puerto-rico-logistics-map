@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import type { HeroContent } from "@/types/content";
 
 export default function Hero({ title, body, primary, secondary }: HeroContent) {
@@ -23,3 +23,4 @@ export default function Hero({ title, body, primary, secondary }: HeroContent) {
     </section>
   );
 }
+

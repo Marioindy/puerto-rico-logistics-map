@@ -1,11 +1,13 @@
-﻿import type { Metadata } from "next";
+﻿﻿import type { Metadata } from "next";
 import {
   Inter,
   JetBrains_Mono,
   Playfair_Display
 } from "next/font/google";
 import Header from "@/components/Header";
-import "@/styles/globals.css";\n// Validate env at build/runtime (server only)\nimport "@/lib/env";
+import "@/styles/globals.css";
+// Validate env at build/runtime (server only)
+import "@/lib/env";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono" });
@@ -45,6 +47,8 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => (
 );
 
 export default RootLayout;
+
+
 
 
 
