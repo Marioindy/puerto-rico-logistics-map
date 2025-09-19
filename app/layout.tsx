@@ -1,3 +1,7 @@
+// Root layout - REQUIRED by Next.js App Router
+// Cannot be renamed or deleted - bootstraps every request through this file
+// Sets global <html>/<body>, loads fonts, imports CSS, renders header/footer
+
 import type { Metadata } from "next";
 import {
   Inter,
@@ -9,6 +13,7 @@ import "@/styles/globals.css";
 // Validate env at build/runtime (server only)
 import "@/lib/env";
 
+// Font configuration - creates CSS custom properties for consistent typography
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono" });
 const playfair = Playfair_Display({
@@ -17,6 +22,7 @@ const playfair = Playfair_Display({
   weight: ["400", "500", "600", "700"]
 });
 
+// SEO metadata configuration - defines site-wide defaults for all pages
 export const metadata: Metadata = {
   icons: { icon: "/favicon.ico" },
   title: {
@@ -28,6 +34,8 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://puerto-rico-logistics-grid.local")
 };
 
+// Root layout component - wraps all pages with consistent structure
+// Provides: HTML structure, font variables, global header/footer, main content area
 const RootLayout = ({ children }: { children: React.ReactNode }) => (
   <html lang="en" suppressHydrationWarning>
     <body
@@ -47,9 +55,3 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => (
 );
 
 export default RootLayout;
-
-
-
-
-
-

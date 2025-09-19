@@ -1,6 +1,7 @@
 // Facility data management for Puerto Rico Logistics Grid
 // Generated from DDEC RFI Survey Responses (69 responses)
 // Source: Real industry data collected July-September 2025
+// TEMPORARY WILL BE REPLACED BY CONVEX
 
 import type { FacilityData, SelectedPin } from '@/types/facilities';
 
