@@ -8,7 +8,7 @@ import type { SelectedPin } from '@/types/facilities';
 const containerStyle = {
   width: "100%",
   height: "100%"
-};
+}
 
 const mapOptions = {
   disableDefaultUI: false,
@@ -110,19 +110,16 @@ const mapOptions = {
       stylers: [{ color: "#ffffff" }]
     }
   ]
-};
+}
 
 const libraries: ("core" | "geometry" | "places" | "visualization")[] = ["core", "geometry", "places", "visualization"];
 
 
 export interface InteractiveMapProps {
   apiKey?: string;
-  center?: { lat: number; lng: number };
+  center?: { lat: number; lng: number }
   zoom?: number;
   markers?: SelectedPin[];
-  onMarkerClick?: (marker: SelectedPin) => void;
-};
-  zoom?: number;
   onMarkerClick?: (marker: SelectedPin) => void;
 }
 
@@ -220,8 +217,11 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({
       ))}
     </GoogleMap>
   );
-};
+}
 
 export default InteractiveMap;
+
+
+
 
 
