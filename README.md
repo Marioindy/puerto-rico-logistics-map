@@ -47,3 +47,15 @@ styles/
 3. Run the dev server: `npm run dev` and open `http://localhost:3000`.
 
 Convex and Amplify are not fully configured yet; follow their respective docs when you are ready to wire in real backends.
+
+## Assistant (Perplexity)
+- API route: `app/api/chat/route.ts` proxies to Perplexity using the secret `PPLX`.
+- Client: `components/ChatbotFab.tsx` renders a floating button and a chat panel on the RFI Map page.
+- Security: The browser never receives `PPLX`; requests go through the server route.
+
+### Configure environment variables
+- Local: copy `.env.local.example` to `.env.local` and set:
+  - `PPLX` — Perplexity API key (server-only)
+  - `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` — Google Maps key (client)
+- Amplify Hosting: add the same variables in “Environment variables”. Do not prefix `PPLX` with `NEXT_PUBLIC_`.
+

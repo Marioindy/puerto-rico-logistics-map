@@ -77,3 +77,9 @@ Continuous integration and automation.
 
 ---
 Maintaining this map keeps every agent aligned—update it as the architecture evolves.
+
+## Chat Assistant (Perplexity)
+- Server route: `app/api/chat/route.ts` — only place that calls Perplexity. Reads `process.env.PPLX`.
+- UI component: `components/ChatbotFab.tsx` — floating button and panel, currently mounted only on RFI map (`app/tracking/page.tsx`).
+- Env vars: add `PPLX` in deployment environment. Never add a `NEXT_PUBLIC_` prefix for secrets.
+- Testing: you can stub the route by returning a canned payload while developing without an API key.
