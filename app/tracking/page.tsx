@@ -1,4 +1,4 @@
-"use client";
+ï»¿"use client";
 
 import InteractiveMap from "@/components/InteractiveMap";
 import FacilityInfoPanel from "@/components/FacilityInfoPanel";
@@ -80,7 +80,7 @@ const TrackingPage = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-xs uppercase tracking-widest text-[#4b5a2a]">Dashboard</p>
-              <h1 className="text-lg font-semibold text-[#1b1c16]">RFI Map — Tracking</h1>
+              <h1 className="text-lg font-semibold text-[#1b1c16]">RFI Map ï¿½ Tracking</h1>
             </div>
           </div>
         </header>
@@ -295,4 +295,5 @@ const TrackingPage = () => {
 };
 
 export default TrackingPage;
+
 

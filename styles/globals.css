@@ -1,4 +1,4 @@
-@import "tailwindcss";
+﻿@import "tailwindcss";
 
 :root {
   color-scheme: light;
@@ -40,3 +40,4 @@ a {
 * {
   box-sizing: border-box;
 }
+

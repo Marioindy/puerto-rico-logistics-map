@@ -1,4 +1,4 @@
-import Image from "next/image";
+﻿import Image from "next/image";
 
 const brandLogos = [
   "Logio",
@@ -160,6 +160,7 @@ const LandingPage = () => (
 );
 
 export default LandingPage;
+
 
 
 
