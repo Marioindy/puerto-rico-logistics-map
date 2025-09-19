@@ -5,7 +5,7 @@ import {
   Playfair_Display
 } from "next/font/google";
 import Header from "@/components/Header";
-import "@/styles/globals.css";
+import "@/styles/globals.css";\n// Validate env at build/runtime (server only)\nimport "@/lib/env";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono" });
@@ -45,6 +45,7 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => (
 );
 
 export default RootLayout;
+
 
 
 

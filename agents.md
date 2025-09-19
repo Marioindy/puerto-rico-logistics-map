@@ -133,3 +133,19 @@ Common pitfalls solved
 Quick links (in repo)
 - `lib/content/schema.ts` — heavily commented schemas
 - `lib/content/loaders.ts` — validation entry point
+# Zod Env Validation
+
+We validate env vars during server render/build:
+- Schema: `lib/env/schema.ts`
+- Loader: `lib/env/index.ts` (parses `process.env` using `safeParse`)
+- Import side-effect: `app/layout.tsx` imports `@/lib/env` to fail fast on missing keys
+
+Keys today
+- Server-only: `PPLX` (Perplexity API key) — used by `app/api/chat/route.ts`
+- Public: `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` — used by `components/MapView.tsx` and `components/InteractiveMap.tsx`
+- Optional: `CONVEX_DEPLOYMENT`, `AMPLIFY_ENV` (reserved)
+
+Guidelines
+- Never expose non-`NEXT_PUBLIC_` secrets to client code.
+- Add new env to schemas first; then read them via `process.env` (server) or `NEXT_PUBLIC_*` (client).
+- Amplify Hosting: set envs in the console or via amplify.yml; local: `.env.local`.
