@@ -23,7 +23,7 @@ const LandingPage = () => (
           Browse everything.
         </h1>
         <p className="max-w-2xl text-pretty text-base text-[#44453d] md:text-lg">
-          Area turns complex logistics data into immersive, shareable stories. Discover the trends that matter, align your
+          RFI Map turns complex logistics data into immersive, shareable stories. Discover the trends that matter, align your
           teams, and take action with confidence across every region.
         </p>
         <div className="flex flex-wrap items-center justify-center gap-3">
@@ -73,7 +73,7 @@ const LandingPage = () => (
           <div className="flex flex-col gap-4">
             <h2 className="text-4xl font-serif font-semibold text-[#101010] md:text-5xl">See the Big Picture</h2>
             <p className="max-w-xl text-base text-[#434334]">
-              Area turns your data into clear, vibrant visuals that reveal exactly what is happening in each region, so you can
+              RFI Map turns your data into clear, vibrant visuals that reveal exactly what is happening in each region, so you can
               plan smarter, react faster, and keep stakeholders aligned.
             </p>
           </div>
@@ -135,7 +135,7 @@ const LandingPage = () => (
     <section id="how" className="mx-auto flex w-full max-w-4xl flex-col items-center gap-8 px-6 text-center">
       <h2 className="text-4xl font-serif font-semibold text-[#101010] md:text-5xl">Connect with us</h2>
       <p className="max-w-2xl text-base text-[#44453d]">
-        Schedule a quick call to discover how Area transforms your regional logistics data into a powerful advantage for your
+        Schedule a quick call to discover how RFI Map transforms your regional logistics data into a powerful advantage for your
         teams on the ground and in the boardroom.
       </p>
       <a
@@ -150,7 +150,7 @@ const LandingPage = () => (
       <div className="rounded-3xl border border-[#d7d1c3] bg-white p-8 shadow-md md:p-12">
         <h3 className="font-serif text-3xl font-semibold text-[#1a1a1a]">Let&rsquo;s build the grid together</h3>
         <p className="mt-4 text-sm text-[#4d4e40] md:text-base">
-          Drop us a line at <a className="font-medium text-[#4b5a2a]" href="mailto:logistics@area.gov">logistics@area.gov</a>
+          Drop us a line at <a className="font-medium text-[#4b5a2a]" href="mailto:team@rfi-map.local">team@rfi-map.local</a>
           {' '}or call +1 (787) 555-0199. We&rsquo;ll share a tailored walkthrough of the dashboards powering Puerto Rico&rsquo;s logistics
           network.
         </p>
@@ -160,6 +160,8 @@ const LandingPage = () => (
 );
 
 export default LandingPage;
+
+
 
 
 
