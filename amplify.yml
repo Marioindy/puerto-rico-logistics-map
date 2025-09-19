@@ -4,7 +4,8 @@ applications:
       phases:
         preBuild:
           commands:
-            - npm ci
+            # Use install instead of ci so added deps (like zod) sync the lockfile automatically in Amplify builds
+            - npm install
         build:
           commands:
             - npm run build
@@ -14,6 +15,4 @@ applications:
           - '**/*'
       cache:
         paths:
-          - node_modules/**/*
-          - .next/cache/**/*
-    appRoot: .
+          - node_modules/**
