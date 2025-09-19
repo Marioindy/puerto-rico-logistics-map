@@ -75,3 +75,83 @@ export const HomeContentSchema = z.object({
  * This guarantees types always match runtime validation.
  */
 export type HomeContentZ = z.infer<typeof HomeContentSchema>;
+
+// ============== RFI MAP SCHEMAS ==============
+
+/** Facility variable schema for dynamic form fields */
+export const FacilityVariableSchema = z.object({
+  key: z.string().min(1),
+  label: z.string().min(1),
+  type: z.enum(['text', 'email', 'number', 'coordinates', 'nested']),
+  value: z.union([z.string(), z.number()]).optional(),
+  unit: z.string().optional(),
+  unitCategory: z.enum(['distance', 'area', 'time', 'capacity', 'volume', 'power', 'percentage']).optional(),
+  icon: z.string().optional(),
+  color: z.string().optional(),
+  subVariables: z.lazy(() => z.array(FacilityVariableSchema)).optional()
+});
+
+/** Facility box schema for grouping related variables */
+export const FacilityBoxSchema = z.object({
+  id: z.string().min(1),
+  title: z.string().min(1),
+  icon: z.string().min(1),
+  color: z.string().min(1),
+  variables: z.array(FacilityVariableSchema).min(1)
+});
+
+/** Main facility data schema */
+export const FacilityDataSchema = z.object({
+  title: z.string().min(1),
+  type: z.string().min(1),
+  boxes: z.array(FacilityBoxSchema).min(1)
+});
+
+/** Coordinates schema for geographic positioning */
+export const CoordinatesSchema = z.object({
+  lat: z.number().min(-90).max(90),
+  lng: z.number().min(-180).max(180)
+});
+
+/** Selected pin schema for map markers */
+export const SelectedPinSchema = z.object({
+  id: z.string().min(1),
+  type: z.enum(['airport', 'port', 'warehouse', 'facility']),
+  coordinates: CoordinatesSchema,
+  data: FacilityDataSchema.optional()
+});
+
+/** Map filter state schema for filter panel controls */
+export const MapFilterStateSchema = z.object({
+  types: z.record(z.string(), z.boolean()),
+  ids: z.record(z.string(), z.boolean())
+});
+
+/** Facilities database schema */
+export const FacilitiesDatabaseSchema = z.record(z.string(), FacilityDataSchema);
+
+/** Map markers array schema */
+export const MapMarkersSchema = z.array(SelectedPinSchema);
+
+/** Facility summary stats schema */
+export const FacilitySummarySchema = z.object({
+  totalFacilities: z.number().int().min(0),
+  totalRFIResponses: z.number().int().min(0),
+  facilitiesWithStorage: z.number().int().min(0),
+  manufacturers: z.number().int().min(0),
+  cargoOperators: z.number().int().min(0),
+  temperatureControlled: z.number().int().min(0),
+  freeTradeZones: z.number().int().min(0),
+  operating24x7: z.number().int().min(0)
+});
+
+// Inferred TypeScript types
+export type FacilityVariableZ = z.infer<typeof FacilityVariableSchema>;
+export type FacilityBoxZ = z.infer<typeof FacilityBoxSchema>;
+export type FacilityDataZ = z.infer<typeof FacilityDataSchema>;
+export type CoordinatesZ = z.infer<typeof CoordinatesSchema>;
+export type SelectedPinZ = z.infer<typeof SelectedPinSchema>;
+export type MapFilterStateZ = z.infer<typeof MapFilterStateSchema>;
+export type FacilitiesDatabaseZ = z.infer<typeof FacilitiesDatabaseSchema>;
+export type MapMarkersZ = z.infer<typeof MapMarkersSchema>;
+export type FacilitySummaryZ = z.infer<typeof FacilitySummarySchema>;
