@@ -110,3 +110,26 @@ Recommended hygiene
   - `rg -n "\\n|`r`n" app/**/*.tsx components/**/*.tsx` (find literal escapes)
   - `npm run typecheck && npm run build`
 - Consider `.gitattributes` to enforce UTF-8 + LF for source files to reduce OS-specific issues.
+# Zod Validation (Runtime + Types)
+
+We validate external and content data with Zod to avoid runtime surprises and to keep types in sync with reality.
+
+- Schemas live in `lib/content/schema.ts`.
+- Loader `lib/content/loaders.ts` uses `HomeContentSchema.parse(...)` to fail fast on bad content.
+- Infer types from schemas (e.g., `z.infer<typeof HomeContentSchema>`) so the TypeScript type always matches validation.
+
+Usage patterns
+- Content-as-code (local):
+  - Author content in `content/home.ts`.
+  - Loader parses it with Zod on server during build/dev.
+- Future CMS:
+  - Fetch JSON ? map it to our section contracts ? `HomeContentSchema.safeParse(json)`.
+  - Surface `result.error.format()` to editors or logs.
+
+Common pitfalls solved
+- Missing fields, wrong hrefs, or invalid URLs: schemas catch these early.
+- Diverging TS interfaces vs. runtime: inferring types from schemas keeps them aligned.
+
+Quick links (in repo)
+- `lib/content/schema.ts` — heavily commented schemas
+- `lib/content/loaders.ts` — validation entry point
