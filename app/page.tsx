@@ -31,7 +31,7 @@ const LandingPage = () => (
             href="#benefits"
             className="inline-flex items-center justify-center rounded-full bg-[#4b5a2a] px-6 py-3 text-sm font-semibold text-[#f6f4ea] transition hover:bg-[#3f4b22]"
           >
-            Learn More ->
+            Learn More &rarr;
           </a>
           <a
             href="#contact"
@@ -91,7 +91,7 @@ const LandingPage = () => (
             href="#specs"
             className="inline-flex w-max items-center gap-2 rounded-full bg-[#dfe8c9] px-6 py-3 text-sm font-semibold text-[#2f3818] transition hover:bg-[#d1ddba]"
           >
-            Discover More ->
+            Discover More &rarr;
           </a>
         </div>
         <div className="relative overflow-hidden rounded-[32px] border border-[#d7d1c3] bg-[#f3e9d6]">
@@ -142,7 +142,7 @@ const LandingPage = () => (
         href="#contact"
         className="inline-flex items-center justify-center rounded-full bg-[#4b5a2a] px-10 py-3 text-sm font-semibold text-[#f6f4ea] transition hover:bg-[#3f4b22]"
       >
-        Learn More ->
+        Learn More &rarr;
       </a>
     </section>
 
@@ -160,3 +160,6 @@ const LandingPage = () => (
 );
 
 export default LandingPage;
+
+
+
