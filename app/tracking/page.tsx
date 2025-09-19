@@ -91,11 +91,15 @@ const TrackingPage = () => {
         {/* Info panel (desktop) */}
         <aside className="absolute right-6 top-24 z-40 hidden w-96 max-h-[calc(100vh-8rem)] overflow-hidden rounded-xl border border-[#e3dcc9] bg-white shadow-md lg:block">
           <FacilityInfoPanel selectedPin={selectedPin} onClose={() => setSelectedPin(null)} isVisible={true} />
-        </aside>\r\n        <ChatbotFab />\r\n      </div>
-    </div>\r\n  );
+        </aside>
+        <ChatbotFab />
+      </div>
+    </div>
+  );
 };
 
 export default TrackingPage;
+
 
 
 
