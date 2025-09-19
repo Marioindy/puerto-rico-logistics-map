@@ -74,8 +74,8 @@ export default function MapFilterPanel({ markers, value, onChange, initiallyOpen
     onChange?.({ ...state, ids: nextIds });
   };
 
+  // Render the collapsible filter panel container
   return (
-    {/* Collapsible filter panel with slide animation */}
     <aside
       className={`transition-all duration-300 ${
         open ? "translate-x-0" : "-translate-x-[calc(100%+16px)]"
@@ -108,8 +108,8 @@ export default function MapFilterPanel({ markers, value, onChange, initiallyOpen
           const typeChecked = state.types[type] ?? true;
           const checkedCount = items.filter((m) => state.ids[m.id] ?? true).length;
 
+          // Render a group for each facility type
           return (
-            {/* Individual facility type group */}
             <div key={type} className="mb-2 rounded-lg border border-[#e3dcc9]">
               {/* Group header with expand/collapse and type checkbox */}
               <div className="flex items-center justify-between px-3 py-2">
