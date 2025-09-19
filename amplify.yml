@@ -8,6 +8,8 @@ applications:
             - npm install
         build:
           commands:
+            # Make public environment variables available to Next.js
+            - env | grep -e NEXT_PUBLIC_ >> .env.production
             - npm run build
       artifacts:
         baseDirectory: .next

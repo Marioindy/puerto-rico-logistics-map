@@ -1,4 +1,4 @@
-# Claude Guide � Repo Conventions
+# Claude Guide � Repo Conventions
 
 ## Architecture
 - Two pages only: landing (`app/homepage`) and RFI map (`app/rfimap`).
@@ -19,10 +19,17 @@
 - Landing page code lives in `app/homepage/homepage.tsx` and its components in `app/homepage/components/`.
 - RFI map workspace lives in `app/rfimap/rfimap.tsx` with its unique components under `app/rfimap/components/`.
 
-## Env Keys
+## Secrets & Environment Variables
 - `PPLX`: server-only Perplexity key (used in `app/api/chat/route.ts`).
+  - **Production**: Set as Secret in Amplify console (Hosting → Secrets)
+  - **Local dev**: Use `npx ampx sandbox secret set PPLX` or add to `.env.local`
+  - **Code**: Access via `secret("PPLX")` from `@aws-amplify/backend`
 - `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY`: client map key (used in `MapView` and `InteractiveMap`).
 - Optional placeholders: `CONVEX_DEPLOYMENT`, `AMPLIFY_ENV`.
+
+## AWS Amplify Secrets
+⚠️ **Important**: Use Secrets for sensitive data (API keys), not Environment Variables.
+See `docs/AMPLIFY_SECRETS.md` for complete setup guide.
 
 ## Editing & Build Hygiene
 - Avoid literal escape sequences (`\n`, `` `r`n ``); write real newlines.
