@@ -1,4 +1,4 @@
-import Image from "next/image";
+﻿import Image from "next/image";`r`nimport MapView from "@/components/MapView";
 
 const brandLogos = [
   "Logio",
@@ -72,16 +72,13 @@ const LandingPage = () => (
       <div className="rounded-[28px] border border-[#e3dcc9] bg-white p-4 shadow-md">
         <div className="flex items-center justify-between px-2 pt-2 pb-4">
           <h2 className="font-serif text-2xl md:text-3xl text-[#1a1a1a]">RFI Map Preview</h2>
-          <a href="/tracking" className="inline-flex items-center rounded-full bg-[#4b5a2a] px-4 py-2 text-sm font-semibold text-[#f6f4ea] hover:bg-[#3f4b22]">Open Full Map ?</a>
+          <a href="/tracking" className="inline-flex items-center rounded-full bg-[#4b5a2a] px-4 py-2 text-sm font-semibold text-[#f6f4ea] hover:bg-[#3f4b22]">Open Full Map &rarr;</a>
         </div>
         <div className="h-[420px] overflow-hidden rounded-2xl border border-[#e3dcc9] bg-[#faf9f5]">
-          {/* Lightweight preview; full experience on /tracking */}
-          <div className="h-full">
-            {/* Client map component */}
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img alt="Map preview placeholder" className="h-full w-full object-cover" src="https://images.unsplash.com/photo-1502920917128-1aa500764cbd?auto=format&fit=crop&w=1600&q=60" />
-          </div>
-        </div>
+          <MapView zoom={8} />
+
+
+
       </div>
     </section><section id="benefits" className="border-y border-[#ded8c8] bg-[#faf9f5] py-20">
       <div className="mx-auto grid w-full max-w-6xl gap-16 px-6 md:grid-cols-[1.25fr_1fr] md:items-center">
@@ -176,6 +173,7 @@ const LandingPage = () => (
 );
 
 export default LandingPage;
+
 
 
 
