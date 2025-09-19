@@ -62,7 +62,7 @@ const TrackingPage = () => {
       {/* Map canvas */}
       <div className="relative h-[calc(100vh-5.5rem)]">
         <Suspense fallback={<div className="flex h-full items-center justify-center text-[#6f705f]">Loading map…</div>}>
-          <InteractiveMap onMarkerClick={setSelectedPin} />
+          <InteractiveMap markers={filteredMarkers} onMarkerClick={setSelectedPin} />
         </Suspense>
 
         {/* Filters (collapsible) */}
@@ -96,6 +96,7 @@ const TrackingPage = () => {
 };
 
 export default TrackingPage;
+
 
 
 
