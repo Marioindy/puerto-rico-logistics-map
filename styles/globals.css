@@ -2,12 +2,14 @@
 
 :root {
   color-scheme: light;
-  --background: #ffffff;
-  --foreground: #111827;
-  --muted: #f3f4f6;
-  --accent: #2563eb;
-  --border: #e5e7eb;
+  --background: #f8f7f3;
+  --foreground: #1a1a1a;
+  --muted: #e2decf;
+  --accent: #4b5a2a;
+  --accent-soft: #cdd9b1;
+  --border: #d6d1c2;
   --font-sans: var(--font-sans, system-ui, -apple-system, BlinkMacSystemFont);
+  --font-serif: var(--font-serif, "Playfair Display", Georgia, serif);
   --font-mono: var(--font-mono, "JetBrains Mono", ui-monospace, SFMono-Regular);
 }
 
@@ -16,8 +18,10 @@
   --color-foreground: var(--foreground);
   --color-muted: var(--muted);
   --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
   --color-border: var(--border);
   --font-sans: var(--font-sans);
+  --font-serif: var(--font-serif);
   --font-mono: var(--font-mono);
 }
 
@@ -30,6 +34,7 @@ body {
 
 a {
   color: inherit;
+  text-decoration: none;
 }
 
 * {

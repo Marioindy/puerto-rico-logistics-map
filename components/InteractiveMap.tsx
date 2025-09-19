@@ -15,7 +15,7 @@ const mapOptions = {
   zoomControl: true,
   mapTypeControl: true,
   scaleControl: true,
-  streetViewControl: false,
+  streetViewControl: true,
   rotateControl: false,
   fullscreenControl: true,
   styles: [
