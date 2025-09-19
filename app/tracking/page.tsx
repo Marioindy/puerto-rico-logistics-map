@@ -3,7 +3,8 @@
 import { useMemo, useState, Suspense } from "react";
 import InteractiveMap from "@/components/InteractiveMap";
 import MapFilterPanel, { MapFilterState } from "@/components/MapFilterPanel";
-import FacilityInfoPanel from "@/components/FacilityInfoPanel";\nimport ChatbotFab from "@/components/ChatbotFab";
+import FacilityInfoPanel from "@/components/FacilityInfoPanel";
+import ChatbotFab from "@/components/ChatbotFab";
 import { getAllMarkers } from "@/lib/facilityData";
 import type { SelectedPin } from "@/types/facilities";
 import { Search } from "lucide-react";
@@ -97,4 +98,6 @@ const TrackingPage = () => {
 };
 
 export default TrackingPage;
+
+
 

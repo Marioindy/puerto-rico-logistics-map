@@ -83,3 +83,30 @@ Maintaining this map keeps every agent aligned—update it as the architecture evo
 - UI component: `components/ChatbotFab.tsx` — floating button and panel, currently mounted only on RFI map (`app/tracking/page.tsx`).
 - Env vars: add `PPLX` in deployment environment. Never add a `NEXT_PUBLIC_` prefix for secrets.
 - Testing: you can stub the route by returning a canned payload while developing without an API key.
+## Build Pitfalls and How to Avoid Them
+
+These failures have recurred during edits on Windows/PowerShell and cause Next/SWC to crash in CI:
+
+- “Expected unicode escape” near an import line
+  - Cause: a literal `\n` or `` `r`n `` sequence was inserted into source (e.g., `import X;\nimport Y`). SWC expects a real newline, not the characters backslash+n.
+  - Avoid: when patching via scripts, use here-strings and never embed escape sequences. Prefer your editor or Git patches. If you must script, write files with Set-Content -Encoding UTF8 and construct strings with actual newlines.
+  - Quick fix: replace literal `\n` with a real newline.
+    - PowerShell: `$c=(Get-Content file -Raw); $c=$c -replace "\\n","`r`n"; Set-Content file -Value $c -Encoding UTF8`
+
+- “Expression expected” at `</section><section ...>`
+  - Cause: missing closing tags or two JSX nodes jammed together on one line.
+  - Avoid: keep JSX blocks formatted with line breaks; don’t concatenate closing and opening tags in replacements.
+  - Quick fix: separate into `</section>\n\n<section ...>` and ensure wrapper divs are properly closed.
+
+- “stream did not contain valid UTF-8”
+  - Cause: file saved with non-UTF8 encoding after shell edits or copy/paste from Word/Outlook.
+  - Avoid: always save `.ts/.tsx/.css` as UTF-8 (no BOM). In PowerShell, use `-Encoding UTF8`.
+  - Quick fix: re-encode: `Set-Content path -Value (Get-Content path -Raw) -Encoding UTF8`.
+
+Recommended hygiene
+- Prefer editor commits over shell text surgery; if scripting, use here-strings:
+  - `@'\n...verbatim content...\n'@ | Set-Content file -Encoding UTF8`
+- Run a quick scan before pushing:
+  - `rg -n "\\n|`r`n" app/**/*.tsx components/**/*.tsx` (find literal escapes)
+  - `npm run typecheck && npm run build`
+- Consider `.gitattributes` to enforce UTF-8 + LF for source files to reduce OS-specific issues.
