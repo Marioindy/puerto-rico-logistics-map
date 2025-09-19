@@ -77,11 +77,11 @@ const LandingPage = () => (
         </div>
         <div className="h-[420px] overflow-hidden rounded-2xl border border-[#e3dcc9] bg-[#faf9f5]">
           <MapView zoom={8} />
-
-
-
       </div>
-    </section><section id="benefits" className="border-y border-[#ded8c8] bg-[#faf9f5] py-20">
+        </div>
+    </section>
+
+    <section id="benefits" className="border-y border-[#ded8c8] bg-[#faf9f5] py-20">
       <div className="mx-auto grid w-full max-w-6xl gap-16 px-6 md:grid-cols-[1.25fr_1fr] md:items-center">
         <div className="flex flex-col gap-8">
           <div className="flex flex-col gap-4">
@@ -174,6 +174,7 @@ const LandingPage = () => (
 );
 
 export default LandingPage;
+
 
 
 
