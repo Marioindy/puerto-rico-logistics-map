@@ -2,8 +2,8 @@
 
 import { useMemo, useState, Suspense } from "react";
 import InteractiveMap from "@/components/InteractiveMap";
-import MapFilterPanel, { MapFilterState } from "@/components/MapFilterPanel";
-import FacilityInfoPanel from "@/components/FacilityInfoPanel";
+import MapFilterPanel, { MapFilterState } from "@/app/rfi/(components)/MapFilterPanel";
+import FacilityInfoPanel from "@/app/rfi/(components)/FacilityInfoPanel";
 import ChatbotFab from "@/components/ChatbotFab";
 import { getAllMarkers } from "@/lib/facilityData";
 import type { SelectedPin } from "@/types/facilities";
@@ -99,6 +99,7 @@ const RFIHomePage =  () => {
 };
 
 export default RFIHomePage;
+
 
 
 
