@@ -72,7 +72,7 @@ const FacilityInfoPanel: React.FC<FacilityInfoPanelProps> = ({
         <div key={variable.key} className="space-y-2">
           <h4 className="text-sm font-medium text-gray-800">{variable.label}</h4>
           <div className="space-y-2 pl-4">
-            {variable.subVariables.map(subVar => (
+            {variable.subVariables.map((subVar: FacilityVariableZ) => (
               <div key={subVar.key} className={`flex items-center gap-2 rounded-lg border p-2 ${colorClass}`}>
                 {IconComponent && <IconComponent className="h-4 w-4" />}
                 <span className="text-xs font-medium">{subVar.label}:</span>
