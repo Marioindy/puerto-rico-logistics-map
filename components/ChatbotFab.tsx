@@ -1,4 +1,4 @@
-"use client";
+ï»¿"use client";
 
 import { useState, useRef } from "react";
 import { MessageCircle, X, Send } from "lucide-react";
@@ -29,7 +29,7 @@ export default function ChatbotFab() {
       const content = data?.choices?.[0]?.message?.content ?? "Sorry, I couldn't find an answer.";
       setMessages((m) => [...m, { role: "assistant", content }]);
       listRef.current?.scrollTo({ top: 999999, behavior: "smooth" });
-    } catch (e: any) {
+    } catch { 
       setMessages((m) => [...m, { role: "assistant", content: "There was an error contacting the assistant." }]);
     } finally {
       setLoading(false);
@@ -79,7 +79,7 @@ export default function ChatbotFab() {
                     </span>
                   </li>
                 ))}
-                {loading && <li className="text-left text-[#6f705f]">Thinking…</li>}
+                {loading && <li className="text-left text-[#6f705f]">Thinkingâ€¦</li>}
               </ul>
             )}
           </div>
@@ -89,7 +89,7 @@ export default function ChatbotFab() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && send()}
-              placeholder="Type your question…"
+              placeholder="Type your questionâ€¦"
               className="flex-1 rounded-md border border-[#d7d1c3] bg-white px-3 py-2 text-sm text-[#1b1c16] placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#4b5a2a]"
             />
             <button
@@ -106,3 +106,4 @@ export default function ChatbotFab() {
     </>
   );
 }
+
