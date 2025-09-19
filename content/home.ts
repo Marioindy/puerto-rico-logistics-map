@@ -11,7 +11,7 @@ export const homeContent: HomeContent = {
   logos: ["Logio", "Logopix", "Northwind", "Logotype", "Logogrid"],
   rfiPreview: {
     title: "RFI Map Preview",
-    cta: { label: "Open Full Map ?", href: "/rfi/map" },
+    cta: { label: "Open Full Map ?", href: "/rfimap" },
     zoom: 8
   },
   benefits: {
@@ -49,4 +49,5 @@ export const homeContent: HomeContent = {
     phone: "+1 (787) 555-0199"
   }
 };
+
 

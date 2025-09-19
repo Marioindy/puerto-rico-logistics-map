@@ -1,27 +1,31 @@
-# Claude Guide — Zod + Content Patterns
+# Claude Guide — Repo Conventions
 
-Dear agent, this project validates content and external data with Zod. Follow these guardrails:
+## Architecture
+- Two pages only: landing (`app/homepage`) and RFI map (`app/rfimap`).
+- Each page folder contains:
+  - `<name>.tsx` (actual page implementation)
+  - `page.tsx` (`export { default } from "./<name>";`)
+  - `components/` for page-specific components (do not leave placeholders).
+- Shared widgets live in `components/` (e.g., `InteractiveMap`, `MapView`, `Header`, `ChatbotFab`).
 
-- Never trust runtime data. Validate with the appropriate Zod schema before using it in a component.
-- For landing content:
-  - Source: `content/home.ts` (content-as-code)
-  - Schema: `lib/content/schema.ts`
-  - Loader: `lib/content/loaders.ts` (calls `.parse()` to fail fast)
-- If you introduce a CMS:
-  - Fetch JSON ? map to section contracts ? `HomeContentSchema.safeParse(payload)`
-  - Prefer `.safeParse` in user-facing flows to return friendly error objects.
+## Zod Usage
+- Content schemas: `lib/content/schema.ts`; loader: `lib/content/loaders.ts`.
+- Env schemas: `lib/env/schema.ts`; loader: `lib/env/index.ts` (imported by `app/layout.tsx`).
+- Always use `safeParse`/`parse` before trusting external data.
+- Infer types with `z.infer<typeof Schema>` to keep TS and runtime aligned.
 
-Authoring schemas
-- Co-locate by domain (e.g., `lib/content/schema.ts`, later `lib/env/schema.ts`).
-- Export inferred types: `export type HomeContentZ = z.infer<typeof HomeContentSchema>`.
-- Add specific `.refine()` rules (e.g., CTA href must be URL, `/path`, or `#anchor`).
+## Page Editing Rules
+- Never add new routes outside the convention above.
+- Landing page code lives in `app/homepage/homepage.tsx` and its components in `app/homepage/components/`.
+- RFI map workspace lives in `app/rfimap/rfimap.tsx` with its unique components under `app/rfimap/components/`.
 
-When editing pages
-- Keep `app/*/page.tsx` thin; import “page barrels” from `components/pages/*`.
-- Server load content with the loader; pass parsed props to section components.
-- Mark interactive components with `"use client"`.
+## Env Keys
+- `PPLX`: server-only Perplexity key (used in `app/api/chat/route.ts`).
+- `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY`: client map key (used in `MapView` and `InteractiveMap`).
+- Optional placeholders: `CONVEX_DEPLOYMENT`, `AMPLIFY_ENV`.
 
-Diagnostics
-- Validation errors throw with a readable path (e.g., `benefits.items[2]`), visible during `npm run build` on Amplify.
-- Use `result.error.format()` for structured messages if you convert `.parse()` to `.safeParse()`.
-
+## Editing & Build Hygiene
+- Avoid literal escape sequences (`\n`, `` `r`n ``); write real newlines.
+- Save source files as UTF-8 without BOM (PowerShell: `Set-Content -Encoding UTF8`).
+- Run `npm run typecheck` and `npm run build` locally before pushing structural changes.
+- If automating edits, prefer here-strings and keep docs (`README.md`, `agents.md`, `Claude.md`) in sync.

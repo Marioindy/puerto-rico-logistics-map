@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import { NavigationItem } from "@/types/navigation";
 
 const navItems: NavigationItem[] = [
@@ -36,5 +36,6 @@ const Header = () => (
 );
 
 export default Header;
+
 
 
