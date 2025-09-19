@@ -1,9 +1,9 @@
-"use client";
+ï»¿"use client";
 
 import { useMemo, useState, Suspense } from "react";
 import InteractiveMap from "@/components/InteractiveMap";
 import MapFilterPanel, { MapFilterState } from "@/components/MapFilterPanel";
-import FacilityInfoPanel from "@/components/FacilityInfoPanel";
+import FacilityInfoPanel from "@/components/FacilityInfoPanel";\nimport ChatbotFab from "@/components/ChatbotFab";
 import { getAllMarkers } from "@/lib/facilityData";
 import type { SelectedPin } from "@/types/facilities";
 import { Search } from "lucide-react";
@@ -43,7 +43,7 @@ const TrackingPage = () => {
         <div className="mx-auto flex w-full max-w-6xl items-center justify-between">
           <div>
             <p className="text-xs uppercase tracking-widest text-[#4b5a2a]">Dashboard</p>
-            <h1 className="text-xl font-semibold">RFI Map — Tracking</h1>
+            <h1 className="text-xl font-semibold">RFI Map â€” Tracking</h1>
           </div>
           <div className="relative hidden md:block">
             <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#a7a38f]" />
@@ -60,7 +60,7 @@ const TrackingPage = () => {
 
       {/* Map canvas */}
       <div className="relative h-[calc(100vh-5.5rem)]">
-        <Suspense fallback={<div className="flex h-full items-center justify-center text-[#6f705f]">Loading map…</div>}>
+        <Suspense fallback={<div className="flex h-full items-center justify-center text-[#6f705f]">Loading mapâ€¦</div>}>
           <InteractiveMap onMarkerClick={setSelectedPin} />
         </Suspense>
 
@@ -97,3 +97,4 @@ const TrackingPage = () => {
 };
 
 export default TrackingPage;
+
