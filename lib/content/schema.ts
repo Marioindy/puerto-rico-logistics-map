@@ -78,8 +78,8 @@ export type HomeContentZ = z.infer<typeof HomeContentSchema>;
 
 // ============== RFI MAP SCHEMAS ==============
 
-/** Facility variable schema for dynamic form fields */
-export const FacilityVariableSchema: z.ZodType<{
+/** Base type for facility variable */
+type FacilityVariableType = {
   key: string;
   label: string;
   type: 'text' | 'email' | 'number' | 'coordinates' | 'nested';
@@ -88,8 +88,11 @@ export const FacilityVariableSchema: z.ZodType<{
   unitCategory?: 'distance' | 'area' | 'time' | 'capacity' | 'volume' | 'power' | 'percentage';
   icon?: string;
   color?: string;
-  subVariables?: any[];
-}> = z.lazy(() => z.object({
+  subVariables?: FacilityVariableType[];
+};
+
+/** Facility variable schema for dynamic form fields */
+export const FacilityVariableSchema: z.ZodType<FacilityVariableType> = z.lazy(() => z.object({
   key: z.string().min(1),
   label: z.string().min(1),
   type: z.enum(['text', 'email', 'number', 'coordinates', 'nested']),
