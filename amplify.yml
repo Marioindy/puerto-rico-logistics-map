@@ -9,8 +9,8 @@ applications:
         build:
           commands:
             # Make environment variables available to Next.js
-            - env | grep -e PPLX >> .env.production
-            - env | grep -e NEXT_PUBLIC_ >> .env.production
+            - env | grep -e PPLX >> .env.production || echo "# PPLX secret not found in environment variables" >> .env.production
+            - env | grep -e NEXT_PUBLIC_ >> .env.production || echo "# No NEXT_PUBLIC_ variables found" >> .env.production
             - npm run build
       artifacts:
         baseDirectory: .next
