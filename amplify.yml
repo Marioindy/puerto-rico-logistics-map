@@ -1,0 +1,21 @@
+version: 1
+applications:
+  - frontend:
+      phases:
+        preBuild:
+          commands:
+            # Use install instead of ci so added deps (like zod) sync the lockfile automatically in Amplify builds
+            - npm install
+        build:
+          commands:
+            # Make environment variables available to Next.js
+            - env | grep -e PPLX >> .env.production
+            - env | grep -e NEXT_PUBLIC_ >> .env.production
+            - npm run build
+      artifacts:
+        baseDirectory: .next
+        files:
+          - '**/*'
+      cache:
+        paths:
+          - node_modules/**

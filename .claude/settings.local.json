@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run lint)",
+      "Bash(npm run typecheck:*)",
+      "Bash(file:*)",
+      "Bash(npm run build:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(npm run dev:*)",
+      "Bash(echo $PPLX)",
+      "WebSearch",
+      "WebFetch(domain:docs.amplify.aws)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

@@ -1,85 +1,38 @@
-# Claude Code Configuration
+# Claude Guide � Repo Conventions
 
-This file provides Claude Code with project-specific context and commands for the Puerto Rico Logistics Grid.
+## Architecture
+- Two pages only: landing (`app/homepage`) and RFI map (`app/rfimap`).
+- Each page folder contains:
+  - `<name>.tsx` (actual page implementation)
+  - `page.tsx` (`export { default } from "./<name>";`)
+  - `components/` for page-specific components (do not leave placeholders).
+- Shared widgets live in `components/` (e.g., `InteractiveMap`, `MapView`, `Header`, `ChatbotFab`).
 
-## Project Commands
+## Zod Usage
+- Content schemas: `lib/content/schema.ts`; loader: `lib/content/loaders.ts`.
+- Env schemas: `lib/env/schema.ts`; loader: `lib/env/index.ts` (imported by `app/layout.tsx`).
+- Always use `safeParse`/`parse` before trusting external data.
+- Infer types with `z.infer<typeof Schema>` to keep TS and runtime aligned.
 
-### Development
-- `npm run dev` - Start development server
-- `npx convex dev` - Start Convex backend (run in separate terminal)
+## Page Editing Rules
+- Never add new routes outside the convention above.
+- Landing page code lives in `app/homepage/homepage.tsx` and its components in `app/homepage/components/`.
+- RFI map workspace lives in `app/rfimap/rfimap.tsx` with its unique components under `app/rfimap/components/`.
 
-### Testing & Quality
-- `npm run lint` - Run ESLint
-- `npm run typecheck` - Run TypeScript checks
-- `npm run build` - Build production bundle
+## Secrets & Environment Variables
+- `PPLX`: server-only Perplexity key (used in `app/api/chat/route.ts`).
+  - **Production**: Set as Secret in Amplify console (Hosting → Secrets)
+  - **Local dev**: Use `npx ampx sandbox secret set PPLX` or add to `.env.local`
+  - **Code**: Access via `secret("PPLX")` from `@aws-amplify/backend`
+- `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY`: client map key (used in `MapView` and `InteractiveMap`).
+- Optional placeholders: `CONVEX_DEPLOYMENT`, `AMPLIFY_ENV`.
 
-### Convex Backend
-- `npx convex dev` - Start Convex development server
-- `npx convex deploy` - Deploy to production
-- Schema changes auto-regenerate `convex/_generated/` when running `npx convex dev`
+## AWS Amplify Secrets
+⚠️ **Important**: Use Secrets for sensitive data (API keys), not Environment Variables.
+See `docs/AMPLIFY_SECRETS.md` for complete setup guide.
 
-## Key Technologies
-- **Frontend**: Next.js 15 (App Router), TypeScript, Tailwind CSS v4
-- **Backend**: Convex (serverless backend)
-- **Maps**: Google Maps JavaScript API
-- **State**: React hooks, Convex queries/mutations
-
-## Path Aliases
-Use these TypeScript path aliases instead of relative imports:
-- `@/app/*` → `./app/*`
-- `@/components/*` → `./components/*`
-- `@/lib/*` → `./lib/*`
-- `@/types/*` → `./types/*`
-
-## Architecture Guidelines
-
-### Component Structure
-- Keep components in `components/` for reusability
-- Co-locate single-use components with their routes in `app/`
-- Prefer client components (`"use client"`) for interactive UI
-- Use server components for data fetching when possible
-
-### Backend Development
-- Define schemas in `convex/schema.ts`
-- Add validators in `convex/validators.ts` 
-- Organize functions by domain in `convex/functions/`
-- Never edit `convex/_generated/` manually
-
-### State Management
-- Use Convex queries for server state
-- Use React hooks for local state
-- User context available via `lib/useUser.ts` (placeholder)
-
-## Environment Setup
-- Copy `.env.local.example` to `.env.local`
-- Add new environment variables to both files
-- Never commit real secrets to Git
-
-## Testing Strategy
-- Run `npm run lint` and `npm run typecheck` before commits
-- CI runs these checks automatically on PRs
-- Manual testing via development server
-
-## Common Patterns
-
-### Adding New Routes
-1. Create route in `app/` following App Router conventions
-2. Use `(dashboard)` route group for authenticated areas
-3. Update navigation in `types/navigation.ts` if needed
-
-### Adding Backend Functionality
-1. Define data model in `convex/schema.ts`
-2. Create validators in `convex/validators.ts`
-3. Implement functions in `convex/functions/domain/`
-4. Import and use in frontend components
-
-### Styling
-- Use Tailwind CSS classes
-- Global styles in `styles/globals.css`
-- CSS variables for theme consistency
-
-## Debugging
-- Use browser dev tools for frontend debugging
-- Check Convex dashboard for backend logs
-- Network tab for API call inspection
-- Console for client-side errors
+## Editing & Build Hygiene
+- Avoid literal escape sequences (`\n`, `` `r`n ``); write real newlines.
+- Save source files as UTF-8 without BOM (PowerShell: `Set-Content -Encoding UTF8`).
+- Run `npm run typecheck` and `npm run build` locally before pushing structural changes.
+- If automating edits, prefer here-strings and keep docs (`README.md`, `agents.md`, `Claude.md`) in sync.

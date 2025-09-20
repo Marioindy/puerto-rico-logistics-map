@@ -40,3 +40,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+# Editor
+/.vscode/
+
+# Local duplicate copy of repo
+/pr-logistics-map/
