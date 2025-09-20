@@ -12,7 +12,9 @@
       "Bash(echo $PPLX)",
       "WebSearch",
       "WebFetch(domain:docs.amplify.aws)",
-      "WebFetch(domain:docs.perplexity.ai)"
+      "WebFetch(domain:docs.perplexity.ai)",
+      "Bash(npm install:*)",
+      "Bash(npm:*)"
     ],
     "deny": [],
     "ask": []
