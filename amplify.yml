@@ -8,8 +8,8 @@ applications:
             - npm install
         build:
           commands:
-            # Make environment variables available to Next.js
-            - env | grep -e PPLX >> .env.production || echo "# PPLX secret not found in environment variables" >> .env.production
+            # Make public environment variables available to Next.js
+            # Note: PPLX is accessed as a secret via process.env.secrets, not as an environment variable
             - env | grep -e NEXT_PUBLIC_ >> .env.production || echo "# No NEXT_PUBLIC_ variables found" >> .env.production
             - npm run build
       artifacts:

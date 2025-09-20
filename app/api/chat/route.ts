@@ -1,8 +1,20 @@
 ﻿import { NextResponse } from "next/server";
 
-// Function to get PPLX API key from environment variables
-// For AWS Amplify hosting, secrets are made available as environment variables
+// Function to get PPLX API key from AWS Amplify secrets or local environment
 function getPPLXApiKey(): string | null {
+  // For AWS Amplify hosting, secrets are stored in process.env.secrets as JSON
+  if (process.env.secrets) {
+    try {
+      const secrets = JSON.parse(process.env.secrets);
+      if (secrets.PPLX) {
+        return secrets.PPLX;
+      }
+    } catch (error) {
+      console.error("Failed to parse secrets JSON:", error);
+    }
+  }
+
+  // Fallback to environment variables for local development
   return process.env.PPLX || null;
 }
 
