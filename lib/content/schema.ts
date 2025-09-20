@@ -88,18 +88,8 @@ export const FacilityVariableSchema: z.ZodType<{
   unitCategory?: 'distance' | 'area' | 'time' | 'capacity' | 'volume' | 'power' | 'percentage';
   icon?: string;
   color?: string;
-  subVariables?: Array<{
-    key: string;
-    label: string;
-    type: 'text' | 'email' | 'number' | 'coordinates' | 'nested';
-    value?: string | number;
-    unit?: string;
-    unitCategory?: 'distance' | 'area' | 'time' | 'capacity' | 'volume' | 'power' | 'percentage';
-    icon?: string;
-    color?: string;
-    subVariables?: unknown;
-  }>;
-}> = z.object({
+  subVariables?: any[];
+}> = z.lazy(() => z.object({
   key: z.string().min(1),
   label: z.string().min(1),
   type: z.enum(['text', 'email', 'number', 'coordinates', 'nested']),
@@ -108,8 +98,8 @@ export const FacilityVariableSchema: z.ZodType<{
   unitCategory: z.enum(['distance', 'area', 'time', 'capacity', 'volume', 'power', 'percentage']).optional(),
   icon: z.string().optional(),
   color: z.string().optional(),
-  subVariables: z.lazy((): z.ZodArray<z.ZodTypeAny> => z.array(FacilityVariableSchema)).optional()
-});
+  subVariables: z.array(FacilityVariableSchema).optional()
+}));
 
 /** Facility box schema for grouping related variables */
 export const FacilityBoxSchema = z.object({
