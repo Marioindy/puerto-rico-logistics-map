@@ -12,6 +12,8 @@ export const ServerEnvSchema = z.object({
   PPLX: z.string().min(1, "Missing PPLX (Perplexity API key)"),
   /** Optional Convex deploy id; currently unused but reserved. */
   CONVEX_DEPLOYMENT: z.string().optional(),
+  /** Optional Convex URL; currently unused but reserved. */
+  CONVEX_URL: z.string().optional(),
   /** Optional Amplify environment label. */
   AMPLIFY_ENV: z.string().optional()
 });

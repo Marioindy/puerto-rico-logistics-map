@@ -1,10 +1,27 @@
 ﻿import { NextResponse } from "next/server";
 
+// Function to get PPLX API key from either Amplify secrets or environment variables
+async function getPPLXApiKey(): Promise<string | null> {
+  // Try AWS Amplify secrets first (for production)
+  try {
+    const { secret } = await import("@aws-amplify/backend");
+    const amplifyKey = secret("PPLX");
+    if (amplifyKey) {
+      return amplifyKey;
+    }
+  } catch {
+    // @aws-amplify/backend not available or secret not found, fallback to env vars
+  }
+
+  // Fallback to environment variables (for local development)
+  return process.env.PPLX || null;
+}
+
 export async function POST(req: Request) {
   try {
-    const apiKey = process.env.PPLX;
+    const apiKey = await getPPLXApiKey();
     if (!apiKey) {
-      console.error("PPLX environment variable not found");
+      console.error("PPLX API key not found in Amplify secrets or environment variables");
       return NextResponse.json({ error: "Missing PPLX API key" }, { status: 500 });
     }
 
