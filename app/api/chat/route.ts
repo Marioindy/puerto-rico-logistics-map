@@ -1,29 +1,14 @@
 ﻿import { NextResponse } from "next/server";
 
-// Function to get PPLX API key from either Amplify secrets or environment variables
-async function getPPLXApiKey(): Promise<string | null> {
-  // Try AWS Amplify secrets first (for production)
-  try {
-    // Use eval to avoid TypeScript compilation errors when package isn't installed
-    const importPath = "@aws-amplify/backend";
-    const amplifyBackend = await eval(`import("${importPath}")`).catch(() => null);
-    if (amplifyBackend?.secret) {
-      const amplifyKey = amplifyBackend.secret("PPLX");
-      if (amplifyKey) {
-        return amplifyKey;
-      }
-    }
-  } catch {
-    // @aws-amplify/backend not available or secret not found, fallback to env vars
-  }
-
-  // Fallback to environment variables (for local development)
+// Function to get PPLX API key from environment variables
+// For AWS Amplify hosting, secrets are made available as environment variables
+function getPPLXApiKey(): string | null {
   return process.env.PPLX || null;
 }
 
 export async function POST(req: Request) {
   try {
-    const apiKey = await getPPLXApiKey();
+    const apiKey = getPPLXApiKey();
     if (!apiKey) {
       console.error("PPLX API key not found in Amplify secrets or environment variables");
       return NextResponse.json({ error: "Missing PPLX API key" }, { status: 500 });
@@ -41,7 +26,7 @@ export async function POST(req: Request) {
         Authorization: `Bearer ${apiKey}`
       },
       body: JSON.stringify({
-        model: "sonar-medium-chat",
+        model: "sonar",
         messages: messages ?? [{ role: "user", content: "Hello" }],
         temperature: 0.2,
         stream: false
