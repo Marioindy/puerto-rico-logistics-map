@@ -19,10 +19,11 @@ export const ServerEnvSchema = z.object({
 });
 
 export const PublicEnvSchema = z.object({
-  /** Google Maps key required by client-side Map components. */
+  /** Google Maps key used by client-side Map components. Optional because components handle missing keys gracefully. */
   NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: z
     .string()
     .min(1, "Missing NEXT_PUBLIC_GOOGLE_MAPS_API_KEY")
+    .optional()
 });
 
 export type ServerEnv = z.infer<typeof ServerEnvSchema>;
