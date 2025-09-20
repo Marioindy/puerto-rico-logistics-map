@@ -4,10 +4,14 @@
 async function getPPLXApiKey(): Promise<string | null> {
   // Try AWS Amplify secrets first (for production)
   try {
-    const { secret } = await import("@aws-amplify/backend");
-    const amplifyKey = secret("PPLX");
-    if (amplifyKey) {
-      return amplifyKey;
+    // Use eval to avoid TypeScript compilation errors when package isn't installed
+    const importPath = "@aws-amplify/backend";
+    const amplifyBackend = await eval(`import("${importPath}")`).catch(() => null);
+    if (amplifyBackend?.secret) {
+      const amplifyKey = amplifyBackend.secret("PPLX");
+      if (amplifyKey) {
+        return amplifyKey;
+      }
     }
   } catch {
     // @aws-amplify/backend not available or secret not found, fallback to env vars
