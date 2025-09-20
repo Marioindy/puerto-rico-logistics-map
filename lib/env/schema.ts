@@ -8,8 +8,8 @@
 import { z } from "zod";
 
 export const ServerEnvSchema = z.object({
-  /** Perplexity API key used by server route /api/chat. Never expose to the browser. */
-  PPLX: z.string().min(1, "Missing PPLX (Perplexity API key)"),
+  /** Perplexity API key used by server route /api/chat. Optional because it can be provided via AWS Amplify secrets. */
+  PPLX: z.string().min(1, "Missing PPLX (Perplexity API key)").optional(),
   /** Optional Convex deploy id; currently unused but reserved. */
   CONVEX_DEPLOYMENT: z.string().optional(),
   /** Optional Convex URL; currently unused but reserved. */
