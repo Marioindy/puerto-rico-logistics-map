@@ -1,19 +1,9 @@
 ﻿import { NextResponse } from "next/server";
-import { secret } from "@aws-amplify/backend";
 
 // Function to get PPLX API key from AWS Amplify secrets or local environment
 function getPPLXApiKey(): string | null {
-  try {
-    // For AWS Amplify, use the secret() function to access secrets
-    const amplifySecret = secret("PPLX");
-    if (amplifySecret) {
-      return amplifySecret;
-    }
-  } catch (error) {
-    console.log("AWS Amplify secret not available, trying local environment:", error);
-  }
-
-  // Fallback to environment variables for local development
+  // For AWS Amplify hosting, secrets are automatically injected as environment variables
+  // when configured in the Amplify console under Hosting → Secrets
   return process.env.PPLX || null;
 }
 
@@ -21,7 +11,7 @@ export async function POST(req: Request) {
   try {
     const apiKey = getPPLXApiKey();
     if (!apiKey) {
-      console.error("PPLX API key not found. Ensure secret('PPLX') is set in AWS Amplify or PPLX in local environment");
+      console.error("PPLX API key not found. Ensure PPLX secret is set in AWS Amplify console (Hosting → Secrets) or PPLX in local .env.local");
       return NextResponse.json({ error: "Missing PPLX API key" }, { status: 500 });
     }
 
