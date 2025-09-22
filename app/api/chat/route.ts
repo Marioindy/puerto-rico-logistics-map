@@ -1,92 +1,84 @@
-﻿import { NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
-// Function to get PPLX API key from AWS Amplify secrets or local environment
-function getPPLXApiKey(): string | null {
-  const apiKey = process.env.PPLX;
-
-  // Debug logging for Amplify deployment troubleshooting
-  console.log("Environment check:", {
-    hasAPIKey: !!apiKey,
-    nodeEnv: process.env.NODE_ENV,
-    amplifyEnv: process.env.AMPLIFY_ENV || "not-set",
-    // Only log first/last chars for security
-    keyPreview: apiKey ? `${apiKey.slice(0, 4)}...${apiKey.slice(-4)}` : "null"
-  });
-
-  return apiKey || null;
-}
-
+/**
+ * POST /api/chat
+ *
+ * Proxies chat requests to Perplexity AI API using the PPLX secret configured in AWS Amplify.
+ * This route is designed for production deployment on AWS Amplify only.
+ *
+ * Secrets are configured in Amplify Console: Hosting → Secrets → PPLX
+ * and made available as environment variables through amplify.yml build configuration.
+ */
 export async function POST(req: Request) {
   try {
-    const apiKey = getPPLXApiKey();
+    // Get Perplexity API key from environment (injected by Amplify during build)
+    const apiKey = process.env.PPLX;
+
     if (!apiKey) {
-      const errorMsg = "PPLX API key not found. Check: 1) Amplify Console → Hosting → Secrets → PPLX is set, 2) amplify.yml writes secrets to .env.production, 3) local .env.local has PPLX";
-      console.error(errorMsg);
+      console.error("PPLX API key not found in environment variables");
       return NextResponse.json({
-        error: "Missing PPLX API key",
-        debug: "Check server logs for environment details"
+        error: "API configuration error",
+        message: "Required API key not available"
       }, { status: 500 });
     }
 
-    const { messages } = (await req.json()) as {
+    // Parse request body
+    const { messages } = await req.json() as {
       messages: { role: "system" | "user" | "assistant"; content: string }[];
     };
 
-    const resp = await fetch("https://api.perplexity.ai/chat/completions", {
+    if (!messages || !Array.isArray(messages)) {
+      return NextResponse.json({
+        error: "Invalid request format",
+        message: "Messages array is required"
+      }, { status: 400 });
+    }
+
+    // Call Perplexity AI API
+    const response = await fetch("https://api.perplexity.ai/chat/completions", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Accept: "application/json",
-        Authorization: `Bearer ${apiKey}`
+        "Accept": "application/json",
+        "Authorization": `Bearer ${apiKey}`
       },
       body: JSON.stringify({
         model: "sonar",
-        messages: messages ?? [{ role: "user", content: "Hello" }],
+        messages: messages,
         temperature: 0.2,
         stream: false
       })
     });
 
-    if (!resp.ok) {
-      let errorMessage = "Upstream error";
+    if (!response.ok) {
+      let errorMessage = "Perplexity API error";
       try {
-        const errJson = (await resp.json()) as unknown;
-        if (errJson && typeof errJson === "object") {
-          const maybeError = errJson as { error?: unknown };
-          if (
-            maybeError.error &&
-            typeof maybeError.error === "object" &&
-            "message" in maybeError.error
-          ) {
-            errorMessage = String((maybeError.error as { message?: unknown }).message ?? errorMessage);
-          } else {
-            errorMessage = JSON.stringify(errJson);
-          }
-        } else if (typeof errJson === "string") {
-          errorMessage = errJson;
-        }
+        const errorData = await response.json();
+        errorMessage = errorData.error?.message || errorData.message || errorMessage;
       } catch {
-        errorMessage = await resp.text();
+        errorMessage = await response.text() || errorMessage;
       }
+
       console.error("Perplexity API error:", {
-        status: resp.status,
-        message: errorMessage,
-        url: resp.url
+        status: response.status,
+        statusText: response.statusText,
+        message: errorMessage
       });
+
       return NextResponse.json({
-        error: errorMessage || "Upstream error",
-        status: resp.status
-      }, { status: resp.status });
+        error: "External API error",
+        message: errorMessage
+      }, { status: response.status });
     }
 
-    const data = await resp.json();
+    const data = await response.json();
     return NextResponse.json(data);
-  } catch (err: unknown) {
-    const errorMessage = err instanceof Error ? err.message : String(err);
-    console.error("Chat API error:", errorMessage);
+
+  } catch (error) {
+    console.error("Chat API error:", error);
     return NextResponse.json({
       error: "Internal server error",
-      debug: errorMessage
+      message: "An unexpected error occurred"
     }, { status: 500 });
   }
 }

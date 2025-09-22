@@ -4,15 +4,17 @@ applications:
       phases:
         preBuild:
           commands:
-            # Use install instead of ci so added deps (like zod) sync the lockfile automatically in Amplify builds
             - npm install
         build:
           commands:
-            # Make public environment variables available to Next.js
-            - env | grep -e NEXT_PUBLIC_ >> .env.production || echo "# No NEXT_PUBLIC_ variables found" >> .env.production
-            # Make Amplify secrets available to Next.js runtime by writing them to .env.production
-            # This bridges Amplify's secret management to Next.js environment variables
+            # Write all AWS Amplify secrets to .env.production for Next.js runtime access
+            # This follows the official AWS Amplify pattern for making secrets available to Next.js
             - echo "PPLX=$PPLX" >> .env.production
+            - echo "CONVEX_DEPLOYMENT=$CONVEX_DEPLOYMENT" >> .env.production
+            - echo "CONVEX_URL=$CONVEX_URL" >> .env.production
+            - echo "GOOGLE_MAPS_API_KEY=$GOOGLE_MAPS_API_KEY" >> .env.production
+            - echo "NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=$GOOGLE_MAPS_API_KEY" >> .env.production
+            # Build the Next.js application
             - npm run build
       artifacts:
         baseDirectory: .next
