@@ -9,8 +9,10 @@ applications:
         build:
           commands:
             # Make public environment variables available to Next.js
-            # Note: PPLX secret is automatically injected as an environment variable by Amplify
             - env | grep -e NEXT_PUBLIC_ >> .env.production || echo "# No NEXT_PUBLIC_ variables found" >> .env.production
+            # Make Amplify secrets available to Next.js runtime by writing them to .env.production
+            # This bridges Amplify's secret management to Next.js environment variables
+            - echo "PPLX=$PPLX" >> .env.production
             - npm run build
       artifacts:
         baseDirectory: .next
