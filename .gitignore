@@ -45,3 +45,10 @@ next-env.d.ts
 
 # Local duplicate copy of repo
 /pr-logistics-map/
+
+
+# amplify
+node_modules
+.amplify
+amplify_outputs*
+amplifyconfiguration*
