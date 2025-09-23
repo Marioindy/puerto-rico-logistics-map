@@ -13,6 +13,9 @@ import type {
   FilterApi,
   FunctionReference,
 } from "convex/server";
+import type * as functions_geoLocales_mutations from "../functions/geoLocales/mutations.js";
+import type * as functions_geoLocales_queries from "../functions/geoLocales/queries.js";
+import type * as functions_geoLocales_seedData from "../functions/geoLocales/seedData.js";
 import type * as functions_index from "../functions/index.js";
 import type * as functions_logistics_tracking from "../functions/logistics/tracking.js";
 import type * as validators from "../validators.js";
@@ -26,6 +29,9 @@ import type * as validators from "../validators.js";
  * ```
  */
 declare const fullApi: ApiFromModules<{
+  "functions/geoLocales/mutations": typeof functions_geoLocales_mutations;
+  "functions/geoLocales/queries": typeof functions_geoLocales_queries;
+  "functions/geoLocales/seedData": typeof functions_geoLocales_seedData;
   "functions/index": typeof functions_index;
   "functions/logistics/tracking": typeof functions_logistics_tracking;
   validators: typeof validators;
