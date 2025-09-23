@@ -7,14 +7,8 @@ applications:
             - npm install
         build:
           commands:
-            # Write all AWS Amplify secrets to .env.production for Next.js runtime access
-            # This follows the official AWS Amplify pattern for making secrets available to Next.js
-            - echo "PPLX=$PPLX" >> .env.production
-            - echo "CONVEX_DEPLOYMENT=$CONVEX_DEPLOYMENT" >> .env.production
-            - echo "CONVEX_URL=$CONVEX_URL" >> .env.production
-            - echo "GOOGLE_MAPS_API_KEY=$GOOGLE_MAPS_API_KEY" >> .env.production
-            - echo "NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=$GOOGLE_MAPS_API_KEY" >> .env.production
-            # Build the Next.js application
+            # AWS Amplify automatically injects secrets as environment variables
+            # No manual secret handling needed - secrets are available via process.env
             - npm run build
       artifacts:
         baseDirectory: .next

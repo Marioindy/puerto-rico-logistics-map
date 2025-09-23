@@ -2,33 +2,34 @@
  * lib/env/index.ts
  * Environment variable validation for AWS Amplify deployment.
  *
- * This module validates environment variables that are injected by AWS Amplify
- * during the build process from secrets configured in the Amplify Console.
- *
- * Import this file in server contexts (e.g., app/layout.tsx) to validate
- * environment configuration during build/runtime initialization.
+ * This module provides non-blocking validation of environment variables.
+ * AWS Amplify injects secrets as environment variables at runtime,
+ * so build-time validation should not fail the build process.
  */
 import { PublicEnvSchema, ServerEnvSchema, type PublicEnv, type ServerEnv } from "@/lib/env/schema";
 
-// Validate server environment variables
+// Non-blocking validation for server environment variables
 const serverParsed = ServerEnvSchema.safeParse(process.env);
 if (!serverParsed.success) {
-  console.warn("Environment validation warnings:", JSON.stringify(serverParsed.error.format(), null, 2));
-  // Don't throw error for missing optional environment variables in Amplify deployment
+  // Log warnings but don't fail the build
+  console.warn("Server environment validation warnings (non-blocking):",
+    JSON.stringify(serverParsed.error.format(), null, 2));
 }
 
-// Validate public environment variables
+// Non-blocking validation for public environment variables
 const publicParsed = PublicEnvSchema.safeParse(process.env);
 if (!publicParsed.success) {
-  console.warn("Public environment validation warnings:", JSON.stringify(publicParsed.error.format(), null, 2));
-  // Don't throw error for missing optional environment variables in Amplify deployment
+  // Log warnings but don't fail the build
+  console.warn("Public environment validation warnings (non-blocking):",
+    JSON.stringify(publicParsed.error.format(), null, 2));
 }
 
 /**
- * Validated environment variables object.
- * Contains both server and public environment variables.
+ * Environment variables object with fallbacks.
+ * Uses parsed data when available, falls back to empty object.
+ * Individual API routes should validate their required secrets at runtime.
  */
-export const env: ServerEnv & PublicEnv = {
+export const env: Partial<ServerEnv & PublicEnv> = {
   ...serverParsed.data,
   ...publicParsed.data
 };

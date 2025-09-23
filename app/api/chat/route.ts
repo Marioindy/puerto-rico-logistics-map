@@ -6,19 +6,27 @@ import { NextResponse } from "next/server";
  * Proxies chat requests to Perplexity AI API using the PPLX secret configured in AWS Amplify.
  * This route is designed for production deployment on AWS Amplify only.
  *
- * Secrets are configured in Amplify Console: Hosting → Secrets → PPLX
- * and made available as environment variables through amplify.yml build configuration.
+ * Required secret: PPLX (configured in Amplify Console: Hosting → Secrets)
  */
 export async function POST(req: Request) {
   try {
-    // Get Perplexity API key from environment (injected by Amplify during build)
+    // Runtime validation of required secret
     const apiKey = process.env.PPLX;
 
     if (!apiKey) {
       console.error("PPLX API key not found in environment variables");
+      console.error("Ensure PPLX secret is configured in AWS Amplify Console: Hosting → Secrets");
       return NextResponse.json({
         error: "API configuration error",
-        message: "Required API key not available"
+        message: "Chat service is not properly configured"
+      }, { status: 500 });
+    }
+
+    if (apiKey.length < 10) {
+      console.error("PPLX API key appears to be invalid (too short)");
+      return NextResponse.json({
+        error: "API configuration error",
+        message: "Chat service configuration is invalid"
       }, { status: 500 });
     }
 

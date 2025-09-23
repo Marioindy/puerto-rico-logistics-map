@@ -2,14 +2,17 @@
  * lib/env/schema.ts
  * Environment variable schemas for AWS Amplify deployment.
  *
- * All secrets are managed through AWS Amplify Console: Hosting → Secrets
- * and made available as environment variables during the build process.
+ * Secrets configured in AWS Amplify Console: Hosting → Secrets
+ * - PPLX (Perplexity API key)
+ * - CONVEX_DEPLOYMENT (reserved)
+ * - CONVEX_URL (reserved)
+ * - NEXT_PUBLIC_GOOGLE_MAPS_API_KEY (Google Maps API key for client access)
  */
 import { z } from "zod";
 
 /**
  * Server-side environment variables schema.
- * These are injected by AWS Amplify during build from configured secrets.
+ * These are injected by AWS Amplify at runtime from configured secrets.
  */
 export const ServerEnvSchema = z.object({
   /** Perplexity API key for chat functionality */
@@ -20,9 +23,6 @@ export const ServerEnvSchema = z.object({
 
   /** Convex URL (reserved for future use) */
   CONVEX_URL: z.string().optional(),
-
-  /** Google Maps API key for server-side operations */
-  GOOGLE_MAPS_API_KEY: z.string().optional(),
 
   /** AWS Amplify environment identifier */
   AMPLIFY_ENV: z.string().optional(),
