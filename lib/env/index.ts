@@ -1,27 +1,35 @@
 /**
  * lib/env/index.ts
- * Centralized env validation. Import in a SERVER context (e.g., app/layout.tsx)
- * to fail fast during build/dev if required variables are missing.
+ * Environment variable validation for AWS Amplify deployment.
  *
- * Do NOT import this file in client components; it reads process.env directly.
- *
- * Note: For AWS Amplify, secrets are accessed via the secret() function in API routes.
- * This file only validates process.env for local development and build-time validation.
+ * This module provides non-blocking validation of environment variables.
+ * AWS Amplify injects secrets as environment variables at runtime,
+ * so build-time validation should not fail the build process.
  */
 import { PublicEnvSchema, ServerEnvSchema, type PublicEnv, type ServerEnv } from "@/lib/env/schema";
 
+// Non-blocking validation for server environment variables
 const serverParsed = ServerEnvSchema.safeParse(process.env);
 if (!serverParsed.success) {
-  // Pretty-print Zod errors for CI logs
-  throw new Error(`Invalid server env. Fix the following:\n${JSON.stringify(serverParsed.error.format(), null, 2)}`);
+  // Log warnings but don't fail the build
+  console.warn("Server environment validation warnings (non-blocking):",
+    JSON.stringify(serverParsed.error.format(), null, 2));
 }
 
+// Non-blocking validation for public environment variables
 const publicParsed = PublicEnvSchema.safeParse(process.env);
 if (!publicParsed.success) {
-  throw new Error(`Invalid public env. Fix NEXT_PUBLIC_* keys:\n${JSON.stringify(publicParsed.error.format(), null, 2)}`);
+  // Log warnings but don't fail the build
+  console.warn("Public environment validation warnings (non-blocking):",
+    JSON.stringify(publicParsed.error.format(), null, 2));
 }
 
-export const env: ServerEnv & PublicEnv = {
+/**
+ * Environment variables object with fallbacks.
+ * Uses parsed data when available, falls back to empty object.
+ * Individual API routes should validate their required secrets at runtime.
+ */
+export const env: Partial<ServerEnv & PublicEnv> = {
   ...serverParsed.data,
   ...publicParsed.data
 };

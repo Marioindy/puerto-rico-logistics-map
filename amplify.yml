@@ -4,13 +4,13 @@ applications:
       phases:
         preBuild:
           commands:
-            # Use install instead of ci so added deps (like zod) sync the lockfile automatically in Amplify builds
             - npm install
+            - echo "CONVEX_DEPLOYMENT=$CONVEX_DEPLOYMENT" >> .env.production
+            - echo "CONVEX_URL=$CONVEX_URL" >> .env.production  
+            - echo "PPLX=$PPLX" >> .env.production
         build:
           commands:
-            # Make public environment variables available to Next.js
-            # Note: PPLX is accessed as a secret via process.env.secrets, not as an environment variable
-            - env | grep -e NEXT_PUBLIC_ >> .env.production || echo "# No NEXT_PUBLIC_ variables found" >> .env.production
+            
             - npm run build
       artifacts:
         baseDirectory: .next
