@@ -5,10 +5,12 @@ applications:
         preBuild:
           commands:
             - npm install
+            - echo "CONVEX_DEPLOYMENT=$CONVEX_DEPLOYMENT" >> .env.production
+            - echo "CONVEX_URL=$CONVEX_URL" >> .env.production  
+            - echo "PPLX=$PPLX" >> .env.production
         build:
           commands:
-            # AWS Amplify automatically injects secrets as environment variables
-            # No manual secret handling needed - secrets are available via process.env
+            
             - npm run build
       artifacts:
         baseDirectory: .next
