@@ -11,8 +11,8 @@ applications:
             - echo "NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=$GOOGLE_MAPS_API_KEY" >> .env.production
         build:
           commands:
-            # Deploy Convex functions and schema to production
-            - npx convex deploy --prod
+            # Deploy Convex functions and schema to production (skip confirmation)
+            - npx convex deploy --yes
             # Generate Convex types for TypeScript
             - npx convex codegen
             # Build Next.js application
