@@ -6,11 +6,16 @@ applications:
           commands:
             - npm install
             - echo "CONVEX_DEPLOYMENT=$CONVEX_DEPLOYMENT" >> .env.production
-            - echo "CONVEX_URL=$CONVEX_URL" >> .env.production  
+            - echo "NEXT_PUBLIC_CONVEX_URL=$CONVEX_URL" >> .env.production
             - echo "PPLX=$PPLX" >> .env.production
+            - echo "NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=$GOOGLE_MAPS_API_KEY" >> .env.production
         build:
           commands:
-            
+            # Deploy Convex functions and schema to production
+            - npx convex deploy --prod
+            # Generate Convex types for TypeScript
+            - npx convex codegen
+            # Build Next.js application
             - npm run build
       artifacts:
         baseDirectory: .next

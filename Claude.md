@@ -25,11 +25,23 @@
   - **Local dev**: Use `npx ampx sandbox secret set PPLX` or add to `.env.local`
   - **Code**: Access via `secret("PPLX")` from `@aws-amplify/backend`
 - `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY`: client map key (used in `MapView` and `InteractiveMap`).
-- Optional placeholders: `CONVEX_DEPLOYMENT`, `AMPLIFY_ENV`.
+- `CONVEX_DEPLOYMENT`: Convex deployment ID for database connection.
+  - **Production**: Set as Secret in Amplify console (e.g., `prod:your-deployment-name-123`)
+  - **Local dev**: Auto-populated by `npx convex dev` in `.env.local`
+- `CONVEX_URL`: Convex backend URL.
+  - **Production**: Set as Secret in Amplify console (e.g., `https://your-project.convex.cloud`)
+  - **Local dev**: Auto-populated by `npx convex dev` in `.env.local`
 
 ## AWS Amplify Secrets
 ⚠️ **Important**: Use Secrets for sensitive data (API keys), not Environment Variables.
 See `docs/AMPLIFY_SECRETS.md` for complete setup guide.
+
+## Convex Database Integration
+- **Schema**: `convex/schema.ts` defines GeoLocales, FacilityBoxes, and FacilityVariables tables.
+- **Functions**: `convex/functions/geoLocales/` contains queries, mutations, and seeding functions.
+- **Deployment**: `amplify.yml` automatically deploys Convex on build with `npx convex deploy --prod`.
+- **Local Development**: Run `npx convex dev` to start development database.
+- **Seeding**: Use `npx convex run geoLocalesSeed:seedSampleGeoLocales` to populate sample data.
 
 ## Editing & Build Hygiene
 - Avoid literal escape sequences (`\n`, `` `r`n ``); write real newlines.
