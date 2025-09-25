@@ -10,7 +10,7 @@ applications:
             - echo "CONVEX_URL=$CONVEX_URL" >> .env.production
             - echo "PPLX=$PPLX" >> .env.production
             - echo "Deploy key prefix:" $(echo $CONVEX_DEPLOY_KEY | cut -c1-10)
-            - CONVEX_DEPLOY_KEY="$CONVEX_DEPLOY_KEY" npx convex deploy
+            #- CONVEX_DEPLOY_KEY="$CONVEX_DEPLOY_KEY" npx convex deploy
         build:
           commands:
             - pnpm run build
