@@ -38,12 +38,12 @@ frontend:
   phases:
     preBuild:
       commands:
-        - npm ci
+        - pnpm install
     build:
       commands:
         # Only make public environment variables available to Next.js
         - env | grep -e NEXT_PUBLIC_ >> .env.production
-        - npm run build
+        - pnpm run build
   artifacts:
     baseDirectory: .next
     files:
@@ -59,7 +59,7 @@ For local development, use Amplify's sandbox secrets:
 
 ```bash
 # Set secret in local sandbox
-npx ampx sandbox secret set PPLX
+pnpx ampx sandbox secret set PPLX
 # You'll be prompted to enter your API key securely
 ```
 
@@ -123,7 +123,7 @@ export async function POST(req: Request) {
    - Ensure your Amplify app has proper permissions to access Parameter Store
 
 3. **Local development issues**
-   - Use `npx ampx sandbox secret set PPLX` for local secrets
+   - Use `pnpx ampx sandbox secret set PPLX` for local secrets
    - Alternatively, ensure `.env.local` exists and contains the PPLX variable
    - Restart your development server after adding secrets/environment variables
 

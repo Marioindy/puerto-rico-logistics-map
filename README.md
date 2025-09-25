@@ -61,12 +61,12 @@ app/<page-name>/<page-name>.tsx      # Page implementation (can be server or cli
 app/<page-name>/page.tsx             # Re-export wrapper required by Next.js
 app/<page-name>/components/          # Components unique to that page
 ```
-Shared UI belongs in `components/`. Do not add placeholders—only commit folders/files once they contain real code.
+Shared UI belongs in `components/`. Do not add placeholdersï¿½only commit folders/files once they contain real code.
 
 ## Getting Started
 1. Copy `.env.local.example` to `.env.local` and fill in real credentials.
-2. Install packages: `npm install` (or `pnpm install`).
-3. Run the dev server: `npm run dev` and open `http://localhost:3000`.
+2. Install packages: `pnpm install`.
+3. Run the dev server: `pnpm run dev` and open `http://localhost:3000`.
 
 Convex and Amplify are not fully configured yet; follow their respective docs when you are ready to wire in real backends.
 
@@ -77,6 +77,6 @@ Convex and Amplify are not fully configured yet; follow their respective docs wh
 
 ### Configure environment variables
 - Local: copy `.env.local.example` to `.env.local` and set:
-  - `PPLX` — Perplexity API key (server-only)
-  - `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` — Google Maps key (client)
+  - `PPLX` ï¿½ Perplexity API key (server-only)
+  - `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` ï¿½ Google Maps key (client)
 - Amplify Hosting: add the same variables in "Environment variables". Do not prefix `PPLX` with `NEXT_PUBLIC_`.

@@ -4,11 +4,12 @@ applications:
       phases:
         preBuild:
           commands:
+            - corepack enable || npm install -g pnpm
             - pnpm install
             - echo "CONVEX_DEPLOYMENT=$CONVEX_DEPLOYMENT" >> .env.production
             - echo "CONVEX_URL=$CONVEX_URL" >> .env.production
             - echo "PPLX=$PPLX" >> .env.production
-            - CONVEX_DEPLOY_KEY=$CONVEX_DEPLOY_KEY npx convex deploy --cmd-url-env-var-name CONVEX_URL
+            - CONVEX_DEPLOY_KEY=$CONVEX_DEPLOY_KEY pnpx convex deploy --cmd-url-env-var-name CONVEX_URL
         build:
           commands:
             - pnpm run build
@@ -18,5 +19,5 @@ applications:
           - '**/*'
       cache:
         paths:
-          - ~/.pnpm-store
+          - ~/.pnpm-store/**/*
           - node_modules/**/*
