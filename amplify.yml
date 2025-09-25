@@ -8,7 +8,7 @@ applications:
             - echo "CONVEX_DEPLOYMENT=$CONVEX_DEPLOYMENT" >> .env.production
             - echo "CONVEX_URL=$CONVEX_URL" >> .env.production
             - echo "PPLX=$PPLX" >> .env.production
-            - npx convex deploy --cmd-url-env-var-name CONVEX_URL --prod
+            - CONVEX_DEPLOY_KEY=$CONVEX_DEPLOY_KEY npx convex deploy --cmd-url-env-var-name CONVEX_URL
         build:
           commands:
             - npm run build

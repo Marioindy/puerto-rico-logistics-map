@@ -64,8 +64,12 @@ If a page has no unique components yet, leave the `components/` folder empty but
   - `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` (client)
 - To test without the service, stub `/api/chat` to return a canned payload.
 
+## Convex Development Rules
+⚠️ **CRITICAL CONVEX RULE**: ALWAYS AND ALWAYS EXPLICITLY READ `convex/convex_rules.txt` BEFORE writing ANY Convex query, mutation, action, or schema code. This file contains essential syntax rules, validators, function registration patterns, and best practices that are EXTREMELY IMPORTANT and MUST be followed exactly. Failure to read and follow these rules will result in broken code.
+
 ## Contribution Checklist
 - Respect page structure (see Page Creation Protocol).
 - Add/update Zod schemas when introducing new content or env requirements.
 - Keep shared types in sync with schemas (prefer `z.infer`).
+- **FOR CONVEX CODE**: Read `convex/convex_rules.txt` first, then implement following those exact patterns.
 - Update docs (`README.md`, `agents.md`, `Claude.md`) whenever architecture or conventions change.

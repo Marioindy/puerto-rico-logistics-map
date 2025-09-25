@@ -43,6 +43,8 @@ See `docs/AMPLIFY_SECRETS.md` for complete setup guide.
 - **Local Development**: Run `npx convex dev` to start development database.
 - **Seeding**: Use `npx convex run geoLocalesSeed:seedSampleGeoLocales` to populate sample data.
 
+⚠️ **CRITICAL CONVEX RULE**: ALWAYS AND ALWAYS EXPLICITLY READ `convex/convex_rules.txt` BEFORE writing ANY Convex query, mutation, action, or schema code. This file contains essential syntax rules, validators, function registration patterns, and best practices that are EXTREMELY IMPORTANT and MUST be followed exactly. Failure to read and follow these rules will result in broken code.
+
 ## Editing & Build Hygiene
 - Avoid literal escape sequences (`\n`, `` `r`n ``); write real newlines.
 - Save source files as UTF-8 without BOM (PowerShell: `Set-Content -Encoding UTF8`).
