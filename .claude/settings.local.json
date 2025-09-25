@@ -16,7 +16,8 @@
       "Bash(npm install:*)",
       "Bash(npm:*)",
       "Bash(echo $CONVEX_DEPLOYMENT)",
-      "Bash(npx convex:*)"
+      "Bash(npx convex:*)",
+      "Bash(rm:*)"
     ],
     "deny": [],
     "ask": []
