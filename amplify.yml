@@ -4,8 +4,14 @@ applications:
       phases:
         preBuild:
           commands:
+            # Display memory info
+            - free -h
+            # Check Node.js memory limits  
+            - node -e "console.log('Heap limit:', process.memoryUsage())"
             - corepack enable || npm install -g pnpm
             - export NODE_OPTIONS='--max-old-space-size=14000'
+            # Check heap size memory limit in MB
+            - node -e "console.log('Total available heap size (MB):', v8.getHeapStatistics().heap_size_limit / 1024 / 1024)"
             - pnpm install
             - echo "CONVEX_DEPLOYMENT=$CONVEX_DEPLOYMENT" >> .env.production
             - echo "CONVEX_URL=$CONVEX_URL" >> .env.production
@@ -20,3 +26,4 @@ applications:
       cache:
         paths:
         - node_modules/**/*
+
