@@ -18,7 +18,12 @@ type ApiKeyResolution =
   | { status: "missing" };
 
 const resolvePplxApiKey = (): ApiKeyResolution => {
-  const secretCandidate = (pplxSecret as unknown as string | undefined)?.trim();
+  const secretRaw = pplxSecret as unknown;
+  const secretCandidate = typeof secretRaw === "string" ? secretRaw.trim() : undefined;
+
+  if (secretRaw && typeof secretRaw !== "string") {
+    console.warn("PPLX secret returned non-string value from secret(\"PPLX\") - falling back to process.env");
+  }
 
   if (secretCandidate) {
     if (secretCandidate.length >= MIN_PPLX_KEY_LENGTH) {
@@ -116,9 +121,11 @@ export async function POST(req: Request) {
 
   } catch (error) {
     console.error("Chat API error:", error);
+    const detail = error instanceof Error ? `${error.name}: ${error.message}` : String(error);
     return NextResponse.json({
       error: "Internal server error",
-      message: "An unexpected error occurred"
+      message: "An unexpected error occurred",
+      detail
     }, { status: 500 });
   }
 }
