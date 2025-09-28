@@ -81,34 +81,125 @@ PPLX=your_local_perplexity_api_key
 
 ## Code Implementation
 
-In your API routes, use the `secret()` function to access secrets:
+Follow this flow whenever a server route needs an AWS Amplify secret:
+
+1. Resolve the value with `secret("<KEY>")` from `@aws-amplify/backend`.
+2. Validate the resolved value is a non-empty string of the expected length.
+3. Optionally fall back to `process.env` so local `.env` development continues to work.
+4. Bubble up meaningful HTTP errors when the secret is missing or malformed before calling external services.
 
 ```typescript
-import { secret } from "@aws-amplify/backend";
 import { NextResponse } from "next/server";
+import { secret } from "@aws-amplify/backend";
+
+const pplxSecret = secret("PPLX");
+const MIN_PPLX_KEY_LENGTH = 10;
+
+type ApiKeyResolution =
+  | { status: "resolved"; apiKey: string; source: "secret" | "env" }
+  | { status: "invalid"; source: "secret" | "env"; length: number }
+  | { status: "missing" };
+
+const resolvePplxApiKey = (): ApiKeyResolution => {
+  const secretRaw = pplxSecret as unknown;
+  const secretCandidate = typeof secretRaw === "string" ? secretRaw.trim() : undefined;
+
+  if (secretRaw && typeof secretRaw !== "string") {
+    console.warn("PPLX secret returned non-string value from secret(\"PPLX\") - falling back to process.env");
+  }
+
+  if (secretCandidate) {
+    if (secretCandidate.length >= MIN_PPLX_KEY_LENGTH) {
+      return { status: "resolved", apiKey: secretCandidate, source: "secret" };
+    }
+    return { status: "invalid", source: "secret", length: secretCandidate.length };
+  }
+
+  const envCandidate = process.env.PPLX?.trim();
+
+  if (envCandidate) {
+    if (envCandidate.length >= MIN_PPLX_KEY_LENGTH) {
+      return { status: "resolved", apiKey: envCandidate, source: "env" };
+    }
+    return { status: "invalid", source: "env", length: envCandidate.length };
+  }
+
+  return { status: "missing" };
+};
 
 export async function POST(req: Request) {
   try {
-    const apiKey = secret("PPLX");
-    if (!apiKey) {
-      return NextResponse.json({ error: "Missing PPLX API key" }, { status: 500 });
+    const resolvedApiKey = resolvePplxApiKey();
+
+    if (resolvedApiKey.status === "missing") {
+      return NextResponse.json(
+        {
+          error: "API configuration error",
+          message: "Chat service is not properly configured (missing PPLX secret)"
+        },
+        { status: 500 }
+      );
     }
 
-    // Use apiKey for Perplexity API calls
+    if (resolvedApiKey.status === "invalid") {
+      return NextResponse.json(
+        {
+          error: "API configuration error",
+          message: "Chat service configuration is invalid (PPLX secret is malformed)",
+          detail: `Resolved from ${resolvedApiKey.source} with length ${resolvedApiKey.length}`
+        },
+        { status: 500 }
+      );
+    }
+
+    const { apiKey } = resolvedApiKey;
+
+    const { messages } = (await req.json()) as {
+      messages: { role: "system" | "user" | "assistant"; content: string }[];
+    };
+
+    if (!Array.isArray(messages)) {
+      return NextResponse.json(
+        { error: "Invalid request format", message: "Messages array is required" },
+        { status: 400 }
+      );
+    }
+
     const response = await fetch("https://api.perplexity.ai/chat/completions", {
+      method: "POST",
       headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
         "Authorization": `Bearer ${apiKey}`
-      }
+      },
+      body: JSON.stringify({ model: "sonar", messages, temperature: 0.2, stream: false })
     });
 
-    // ... rest of implementation
+    if (!response.ok) {
+      const errorBody = await response.text();
+      return NextResponse.json(
+        {
+          error: "External API error",
+          message: errorBody || "Perplexity API error"
+        },
+        { status: response.status }
+      );
+    }
+
+    return NextResponse.json(await response.json());
   } catch (error) {
-    console.error("API error:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    const detail = error instanceof Error ? `${error.name}: ${error.message}` : String(error);
+    return NextResponse.json(
+      {
+        error: "Internal server error",
+        message: "An unexpected error occurred",
+        detail
+      },
+      { status: 500 }
+    );
   }
 }
 ```
-
 ## Troubleshooting
 
 ### Common Issues
@@ -151,6 +242,7 @@ export async function POST(req: Request) {
 - [AWS Amplify Environment Variables](https://docs.aws.amazon.com/amplify/latest/userguide/environment-variables.html)
 - [Next.js Environment Variables](https://nextjs.org/docs/basic-features/environment-variables)
 - [AWS Secrets Manager](https://docs.aws.amazon.com/secretsmanager/)
+
 
 
 

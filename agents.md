@@ -57,10 +57,12 @@ If a page has no unique components yet, leave the `components/` folder empty but
 - Prefer using your editor for edits; if scripting with PowerShell, use here-strings and `Set-Content -Encoding UTF8`.
 
 ## Assistant (Perplexity)
-- Server route: `app/api/chat/route.ts` (uses `process.env.PPLX`).
-- Client: `components/ChatbotFab.tsx` (mounted on RFI map).
+- Server route: `app/api/chat/route.ts`.
+  - Resolve the API key with `secret("PPLX")` from `@aws-amplify/backend`, validate it is a non-empty string, and fall back to `process.env.PPLX` for local overrides.
+  - Return clear 500 responses when the secret is missing or malformed before forwarding requests to Perplexity.
+- Client: `components/ChatbotFab.tsx` (mounted on RFI map) with enhanced debug output for failed chats.
 - Env keys:
-  - `PPLX` (server-only)
+  - `PPLX` (server-only secret)
   - `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` (client)
 - To test without the service, stub `/api/chat` to return a canned payload.
 
@@ -69,4 +71,5 @@ If a page has no unique components yet, leave the `components/` folder empty but
 - Add/update Zod schemas when introducing new content or env requirements.
 - Keep shared types in sync with schemas (prefer `z.infer`).
 - Update docs (`README.md`, `agents.md`, `Claude.md`) whenever architecture or conventions change.
+
 
