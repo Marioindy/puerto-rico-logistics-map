@@ -34,5 +34,6 @@ See `docs/AMPLIFY_SECRETS.md` for complete setup guide.
 ## Editing & Build Hygiene
 - Avoid literal escape sequences (`\n`, `` `r`n ``); write real newlines.
 - Save source files as UTF-8 without BOM (PowerShell: `Set-Content -Encoding UTF8`).
-- Run `npm run typecheck` and `npm run build` locally before pushing structural changes.
+- Run `pnpm run typecheck` and `pnpm run build` locally before pushing structural changes.
 - If automating edits, prefer here-strings and keep docs (`README.md`, `agents.md`, `Claude.md`) in sync.
+

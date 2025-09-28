@@ -38,19 +38,20 @@ frontend:
   phases:
     preBuild:
       commands:
-        - npm ci
+        - corepack enable pnpm
+        - pnpm install --frozen-lockfile
     build:
       commands:
         # Only make public environment variables available to Next.js
         - env | grep -e NEXT_PUBLIC_ >> .env.production
-        - npm run build
+        - pnpm run build
   artifacts:
     baseDirectory: .next
     files:
       - '**/*'
   cache:
     paths:
-      - node_modules/**/*
+      - .pnpm-store/**
 ```
 
 ### 3. Local Development
@@ -150,3 +151,7 @@ export async function POST(req: Request) {
 - [AWS Amplify Environment Variables](https://docs.aws.amazon.com/amplify/latest/userguide/environment-variables.html)
 - [Next.js Environment Variables](https://nextjs.org/docs/basic-features/environment-variables)
 - [AWS Secrets Manager](https://docs.aws.amazon.com/secretsmanager/)
+
+
+
+
