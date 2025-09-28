@@ -1,9 +1,34 @@
-﻿"use client";
+"use client";
 
 import { useState, useRef } from "react";
 import { MessageCircle, X, Send } from "lucide-react";
 
 export type ChatMessage = { role: "user" | "assistant"; content: string };
+
+const DEBUG_OUTPUT_LIMIT = 800;
+
+const formatDebugPayload = (payload: unknown): string => {
+  if (payload === null || payload === undefined) {
+    return "No response body received.";
+  }
+
+  if (typeof payload === "string") {
+    if (payload.length > DEBUG_OUTPUT_LIMIT) {
+      return `${payload.slice(0, DEBUG_OUTPUT_LIMIT)}... (truncated)`;
+    }
+    return payload;
+  }
+
+  try {
+    const serialized = JSON.stringify(payload, null, 2);
+    if (serialized.length > DEBUG_OUTPUT_LIMIT) {
+      return `${serialized.slice(0, DEBUG_OUTPUT_LIMIT)}... (truncated)`;
+    }
+    return serialized;
+  } catch {
+    return "Unable to serialize response payload for debugging.";
+  }
+};
 
 export default function ChatbotFab() {
   const [open, setOpen] = useState(false);
@@ -12,25 +37,86 @@ export default function ChatbotFab() {
   const [loading, setLoading] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
 
+  const scrollToBottom = () => {
+    if (!listRef.current) return;
+    listRef.current.scrollTo({
+      top: listRef.current.scrollHeight,
+      behavior: "smooth"
+    });
+  };
+
+  const appendAssistantMessage = (content: string) => {
+    setMessages((prev) => [...prev, { role: "assistant", content }]);
+    setTimeout(scrollToBottom, 0);
+  };
+
   const send = async () => {
     const text = input.trim();
     if (!text || loading) return;
-    const nextMsgs = [...messages, { role: "user", content: text } as ChatMessage];
+
+    const userMessage: ChatMessage = { role: "user", content: text };
+    const nextMsgs = [...messages, userMessage];
     setMessages(nextMsgs);
     setInput("");
     setLoading(true);
+
     try {
       const resp = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: [{ role: "system", content: "You are an assistant for the Puerto Rico RFI Map. Be concise and helpful." }, ...nextMsgs] })
+        body: JSON.stringify({
+          messages: [
+            {
+              role: "system",
+              content:
+                "You are an assistant for the Puerto Rico RFI Map. Be concise and helpful."
+            },
+            ...nextMsgs
+          ]
+        })
       });
-      const data = await resp.json();
-      const content = data?.choices?.[0]?.message?.content ?? "Sorry, I couldn't find an answer.";
-      setMessages((m) => [...m, { role: "assistant", content }]);
-      listRef.current?.scrollTo({ top: 999999, behavior: "smooth" });
-    } catch { 
-      setMessages((m) => [...m, { role: "assistant", content: "There was an error contacting the assistant." }]);
+
+      const rawBody = await resp.text();
+      let parsedBody: unknown = null;
+
+      if (rawBody) {
+        try {
+          parsedBody = JSON.parse(rawBody);
+        } catch {
+          parsedBody = rawBody;
+        }
+      }
+
+      if (!resp.ok) {
+        const debugDetails = formatDebugPayload(parsedBody ?? rawBody);
+        appendAssistantMessage(
+          `Chat service responded with ${resp.status} ${resp.statusText}.
+
+${debugDetails}`
+        );
+        return;
+      }
+
+      const assistantContent =
+        typeof parsedBody === "object" && parsedBody !== null
+          ? (parsedBody as any)?.choices?.[0]?.message?.content
+          : undefined;
+
+      if (typeof assistantContent !== "string" || !assistantContent.trim()) {
+        const debugDetails = formatDebugPayload(parsedBody ?? rawBody);
+        appendAssistantMessage(
+          `Chat service returned no assistant message.
+
+${debugDetails}`
+        );
+        return;
+      }
+
+      appendAssistantMessage(assistantContent.trim());
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : String(error ?? "Unknown error");
+      appendAssistantMessage(`Chat request failed: ${message}`);
     } finally {
       setLoading(false);
     }
@@ -79,7 +165,7 @@ export default function ChatbotFab() {
                     </span>
                   </li>
                 ))}
-                {loading && <li className="text-left text-[#6f705f]">Thinking…</li>}
+                {loading && <li className="text-left text-[#6f705f]">Thinking.</li>}
               </ul>
             )}
           </div>
@@ -89,7 +175,7 @@ export default function ChatbotFab() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && send()}
-              placeholder="Type your question…"
+              placeholder="Type your question."
               className="flex-1 rounded-md border border-[#d7d1c3] bg-white px-3 py-2 text-sm text-[#1b1c16] placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#4b5a2a]"
             />
             <button
@@ -106,4 +192,3 @@ export default function ChatbotFab() {
     </>
   );
 }
-
