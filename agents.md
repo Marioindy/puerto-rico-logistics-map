@@ -53,7 +53,7 @@ If a page has no unique components yet, leave the `components/` folder empty but
 ## Build & Editing Guardrails
 - Avoid literal escape sequences (`\n`, `` `r`n ``) in files; use here-strings or actual newlines.
 - Always write source files with UTF-8 (no BOM). `.gitattributes` enforces LF for source files.
-- Run `npm run typecheck` and `npm run build` locally before pushing when making structural changes.
+- Run `pnpm run typecheck` and `pnpm run build` locally before pushing when making structural changes.
 - Prefer using your editor for edits; if scripting with PowerShell, use here-strings and `Set-Content -Encoding UTF8`.
 
 ## Assistant (Perplexity)
@@ -69,3 +69,4 @@ If a page has no unique components yet, leave the `components/` folder empty but
 - Add/update Zod schemas when introducing new content or env requirements.
 - Keep shared types in sync with schemas (prefer `z.infer`).
 - Update docs (`README.md`, `agents.md`, `Claude.md`) whenever architecture or conventions change.
+

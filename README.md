@@ -65,8 +65,8 @@ Shared UI belongs in `components/`. Do not add placeholders—only commit folders/
 
 ## Getting Started
 1. Copy `.env.local.example` to `.env.local` and fill in real credentials.
-2. Install packages: `npm install` (or `pnpm install`).
-3. Run the dev server: `npm run dev` and open `http://localhost:3000`.
+2. Install packages: `pnpm install`.
+3. Run the dev server: `pnpm dev` and open `http://localhost:3000`.
 
 Convex and Amplify are not fully configured yet; follow their respective docs when you are ready to wire in real backends.
 
@@ -80,3 +80,4 @@ Convex and Amplify are not fully configured yet; follow their respective docs wh
   - `PPLX` — Perplexity API key (server-only)
   - `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` — Google Maps key (client)
 - Amplify Hosting: add the same variables in "Environment variables". Do not prefix `PPLX` with `NEXT_PUBLIC_`.
+
