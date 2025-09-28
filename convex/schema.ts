@@ -1,15 +1,28 @@
+// convex/schema.ts
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 
-// Minimal logistics entities; flesh out fields once data contracts are agreed.
 export default defineSchema({
   facilities: defineTable({
+    // required
     name: v.string(),
-    region: v.optional(v.string())
-  }).index("by_name", ["name"]),
-  shipments: defineTable({
-    reference: v.string(),
-    status: v.string(),
-    updatedAt: v.string()
-  }).index("by_reference", ["reference"])
+    lat: v.number(),
+    lng: v.number(),
+
+    // optional fields
+    category: v.optional(v.string()),
+    address: v.optional(v.string()),
+    phone: v.optional(v.string()),
+    website: v.optional(v.string()),
+    description: v.optional(v.string()),
+    tags: v.optional(v.array(v.string())),
+
+    // used for upserts
+    externalId: v.optional(v.string()),
+
+    // metadata
+    updatedAt: v.number(),
+  })
+    .index("by_externalId", ["externalId"])
+    .index("by_category", ["category"]),
 });
