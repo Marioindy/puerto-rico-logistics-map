@@ -30,6 +30,28 @@ const formatDebugPayload = (payload: unknown): string => {
   }
 };
 
+type PerplexityChatCompletion = {
+  choices?: {
+    message?: {
+      content?: string;
+    };
+  }[];
+};
+
+const extractAssistantMessage = (payload: unknown): string | undefined => {
+  if (!payload || typeof payload !== "object") {
+    return undefined;
+  }
+
+  const { choices } = payload as PerplexityChatCompletion;
+  if (!Array.isArray(choices) || choices.length === 0) {
+    return undefined;
+  }
+
+  const message = choices[0]?.message?.content;
+  return typeof message === "string" ? message : undefined;
+};
+
 export default function ChatbotFab() {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -97,10 +119,7 @@ ${debugDetails}`
         return;
       }
 
-      const assistantContent =
-        typeof parsedBody === "object" && parsedBody !== null
-          ? (parsedBody as any)?.choices?.[0]?.message?.content
-          : undefined;
+      const assistantContent = extractAssistantMessage(parsedBody);
 
       if (typeof assistantContent !== "string" || !assistantContent.trim()) {
         const debugDetails = formatDebugPayload(parsedBody ?? rawBody);
