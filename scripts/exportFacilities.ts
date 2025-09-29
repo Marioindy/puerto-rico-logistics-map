@@ -1,9 +1,9 @@
 // scripts/exportFacilities.ts
 import fs from "node:fs";
 import path from "node:path";
-import * as src from "../lib/facilityData"; // your current source (no coords inside)
+import { facilityDatabase } from "../lib/facilityData";
+import type { FacilityData, FacilityVariable } from "../types/facilities";
 
-// ---------- types ----------
 type FacilityOut = {
   externalId?: string;
   name: string;
@@ -17,122 +17,124 @@ type FacilityOut = {
   tags?: string[];
 };
 
-// ---------- output paths ----------
 const repoRoot = path.resolve(__dirname, "..");
 const outDir = path.join(repoRoot, "scripts");
 const outFile = path.join(outDir, "seedFacilities.json");
 
-// ---------- helpers ----------
-function asString(value: any): string | undefined {
+const asString = (value: unknown): string | undefined => {
   if (value === null || value === undefined) return undefined;
   if (typeof value === "string") return value.trim() || undefined;
-  if (typeof value === "number") return String(value);
+  if (typeof value === "number") return value.toString();
   return undefined;
-}
+};
 
-type Variable = {
-  key?: string;
-  label?: string;
-  value?: unknown;
+type VariableCandidate = FacilityVariable & {
   text?: unknown;
   content?: unknown;
   data?: unknown;
 };
 
-function extractText(vars: Variable[], ...keys: string[]): string | undefined {
-  for (const key of keys) {
-    const hit = vars.find((variable: Variable) => {
-      const k = (variable?.key ?? variable?.label ?? "").toString().toLowerCase();
-      return k.includes(key.toLowerCase());
-    });
-    if (!hit) continue;
-    const val = hit.value ?? hit.text ?? hit.content ?? hit.data;
-    const str = asString(val);
-    if (str) return str;
-  }
-  return undefined;
-}
-      return k.includes(key.toLowerCase());
-    });
-    if (!hit) continue;
-    const val = hit.value ?? hit.text ?? hit.content ?? hit.data;
-    const s = asString(val);
-    if (s) return s;
-  }
-  return undefined;
-}
+const normalize = (value: unknown): string =>
+  (value ?? "")
+    .toString()
+    .normalize("NFD")
+    .replace(/[^\x00-\x7F]/g, "")
+    .toLowerCase();
 
-// DJB2 hash → uint32
-function hash32(str: string): number {
+const extractText = (variables: VariableCandidate[], ...keys: string[]): string | undefined => {
+  const normalizedKeys = keys.map((key) => normalize(key));
+
+  for (const variable of variables) {
+    const composite = normalize(variable.key ?? variable.label);
+    if (!normalizedKeys.some((key) => composite.includes(key))) continue;
+
+    const candidate =
+      variable.value ??
+      variable.text ??
+      variable.content ??
+      variable.data;
+
+    const result = asString(candidate);
+    if (result) return result;
+  }
+
+  return undefined;
+};
+
+const toStringArray = (value: unknown): string[] | undefined => {
+  if (!Array.isArray(value)) return undefined;
+  const items = value.filter((item): item is string => typeof item === "string");
+  return items.length > 0 ? items : undefined;
+};
+
+// DJB2 hash -> uint32
+const hash32 = (str: string): number => {
   let hash = 5381 >>> 0;
-  for (let i = 0; i < str.length; i++) hash = ((hash << 5) + hash + str.charCodeAt(i)) >>> 0;
+  for (let i = 0; i < str.length; i += 1) {
+    hash = ((hash << 5) + hash + str.charCodeAt(i)) >>> 0;
+  }
   return hash >>> 0;
-}
+};
 
 // Map [0,1] into Puerto Rico bounding box (shrunk a bit to avoid edges)
-const PR = {
+const PR_BOUNDS = {
   latMin: 17.95,
   latMax: 18.52,
   lngMin: -67.25,
-  lngMax: -65.30,
+  lngMax: -65.3,
 };
 
-// Deterministic dummy coords inside PR box, based on id/name
-function dummyCoords(seed: string) {
-  const h1 = hash32(seed);
-  const h2 = hash32(seed + "|lng");
-  const u1 = h1 / 0xffffffff; // [0,1]
-  const u2 = h2 / 0xffffffff; // [0,1]
-  const lat = PR.latMin + u1 * (PR.latMax - PR.latMin);
-  const lng = PR.lngMin + u2 * (PR.lngMax - PR.lngMin);
-  // round a bit for cleaner output
-  return { lat: Math.round(lat * 1e5) / 1e5, lng: Math.round(lng * 1e5) / 1e5 };
-}
+const dummyCoords = (seed: string) => {
+  const hLat = hash32(seed);
+  const hLng = hash32(`${seed}|lng`);
+  const uLat = hLat / 0xffffffff;
+  const uLng = hLng / 0xffffffff;
+  const lat = PR_BOUNDS.latMin + uLat * (PR_BOUNDS.latMax - PR_BOUNDS.latMin);
+  const lng = PR_BOUNDS.lngMin + uLng * (PR_BOUNDS.lngMax - PR_BOUNDS.lngMin);
+  return {
+    lat: Math.round(lat * 1e5) / 1e5,
+    lng: Math.round(lng * 1e5) / 1e5,
+  };
+};
 
-// ---------- main ----------
 async function main() {
-  const facilitiesObj = (src as any).facilityDatabase as
-    | Record<string, any>
-    | undefined;
+  const facilities: Array<[string, FacilityData]> = Object.entries(facilityDatabase);
 
-  if (!facilitiesObj) {
-    console.error('ERROR: Could not find export "facilityDatabase" in lib/facilityData.ts');
+  if (facilities.length === 0) {
+    console.error("ERROR: facilityDatabase export is empty.");
     process.exit(1);
   }
 
-  const out: FacilityOut[] = [];
+  const output: FacilityOut[] = [];
   let dummyCount = 0;
 
-  for (const [id, record] of Object.entries(facilitiesObj)) {
+  for (const [id, record] of facilities) {
+    const recordExtras = record as FacilityData & Record<string, unknown>;
     const externalId = id;
-    const nameCandidate = record?.title ?? record?.name ?? id;
-    const category = record?.type ?? record?.category;
-    const tags = Array.isArray(record?.tags) ? record.tags : undefined;
+    const nameCandidate = asString(recordExtras.title) ?? asString(recordExtras.name) ?? id;
+    const category = asString(recordExtras.type) ?? asString(recordExtras.category);
+    const tags = toStringArray(recordExtras.tags);
 
-    const boxes = Array.isArray(record?.boxes) ? record.boxes : [];
-    const allVars = boxes.flatMap((b: any) =>
-      Array.isArray(b?.variables) ? b.variables : []
+    const boxes = Array.isArray(record.boxes) ? record.boxes : [];
+    const variables = boxes.flatMap<VariableCandidate>((box) =>
+      Array.isArray(box.variables) ? box.variables.map((variable) => ({ ...variable })) : []
     );
 
-    const name =
-      extractText(allVars, "name", "official name") ??
-      asString(nameCandidate) ??
-      id;
-    const address = extractText(allVars, "address", "dirección", "location");
-    const phone = extractText(allVars, "phone", "teléfono");
-    const website = extractText(allVars, "website", "site", "url");
-    const description = extractText(allVars, "description", "notes", "desc", "info");
+    const name = nameCandidate ?? extractText(variables, "name", "official name") ?? id;
+    const address = extractText(variables, "address", "direccion", "location");
+    const phone = extractText(variables, "phone", "telefono");
+    const website = extractText(variables, "website", "site", "url");
+    const description = extractText(variables, "description", "notes", "desc", "info");
 
-    // No real coords → fabricate deterministic dummy ones in PR
-    const { lat, lng } = dummyCoords(externalId || name!);
-    dummyCount++;
+    const { lat, lng } = dummyCoords(externalId || name);
+    dummyCount += 1;
 
-    out.push({
+    output.push({
       externalId,
-      name: name!,
+      name,
       lat,
       lng,
-      category: asString(category),
+      category,
       address,
       phone,
       website,
@@ -142,12 +144,14 @@ async function main() {
   }
 
   fs.mkdirSync(outDir, { recursive: true });
-  fs.writeFileSync(outFile, JSON.stringify(out, null, 2), "utf8");
-  console.log(`✅ Wrote ${out.length} facilities → ${outFile}`);
-  console.log(`🧪 Used dummy Puerto Rico coordinates for ${dummyCount} facilities`);
+  fs.writeFileSync(outFile, JSON.stringify(output, null, 2), "utf8");
+  console.log(`Wrote ${output.length} facilities to ${outFile}`);
+  console.log(`Used dummy Puerto Rico coordinates for ${dummyCount} facilities`);
 }
 
-main().catch((e) => {
-  console.error(e);
+main().catch((error) => {
+  console.error(error);
   process.exit(1);
 });
+
+

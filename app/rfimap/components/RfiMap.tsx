@@ -15,6 +15,23 @@ export type MarkerData = {
   tags?: string[];
 };
 
+type GoogleMapsNamespace = typeof google.maps;
+
+interface GoogleWindow extends Window {
+  google?: {
+    maps?: GoogleMapsNamespace;
+  };
+}
+
+const getGoogleMaps = (): GoogleMapsNamespace | undefined => {
+  if (typeof window === "undefined") {
+    return undefined;
+  }
+
+  const candidate = window as GoogleWindow;
+  return candidate.google?.maps;
+};
+
 export default function RfiMap({ markers }: { markers: MarkerData[] }) {
   const mapDivRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<google.maps.Map | null>(null);
@@ -24,11 +41,13 @@ export default function RfiMap({ markers }: { markers: MarkerData[] }) {
   // Init map once
   useEffect(() => {
     if (!mapDivRef.current || mapRef.current) return;
-    const googleMaps = (window.google?.maps as typeof google.maps | undefined);
+
+    const googleMaps = getGoogleMaps();
     if (!googleMaps) {
       console.warn("Google Maps JS API not loaded yet");
       return;
     }
+
     mapRef.current = new googleMaps.Map(mapDivRef.current, {
       center: { lat: 18.2208, lng: -66.5901 }, // Puerto Rico
       zoom: 8,
@@ -39,7 +58,7 @@ export default function RfiMap({ markers }: { markers: MarkerData[] }) {
 
   // Update markers when data changes
   useEffect(() => {
-    const googleMaps = (window as any).google?.maps;
+    const googleMaps = getGoogleMaps();
     const map = mapRef.current;
     if (!googleMaps || !map) return;
 
@@ -100,4 +119,3 @@ function buildInfoHtml(marker: MarkerData) {
 function escapeHtml(str: string) {
   return str.replace(/[&<>"']/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]!));
 }
-
