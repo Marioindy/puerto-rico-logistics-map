@@ -72,20 +72,20 @@ export const upsertMany = mutationGeneric({
   handler: async (ctx, args) => {
     const now = Date.now();
 
-    for (const f of args.facilities) {
-      if (f.externalId) {
+    for (const facility of args.facilities) {
+      if (facility.externalId) {
         const existing = await ctx.db
           .query("facilities")
-          .withIndex("by_externalId", (q) => q.eq("externalId", f.externalId!))
+          .withIndex("by_externalId", (q) => q.eq("externalId", facility.externalId!))
           .first();
 
         if (existing) {
-          await ctx.db.patch(existing._id, { ...f, updatedAt: now });
+          await ctx.db.patch(existing._id, { ...facility, updatedAt: now });
           continue;
         }
       }
 
-      await ctx.db.insert("facilities", { ...f, updatedAt: now });
+      await ctx.db.insert("facilities", { ...facility, updatedAt: now });
     }
 
     return { ok: true, upserted: args.facilities.length };

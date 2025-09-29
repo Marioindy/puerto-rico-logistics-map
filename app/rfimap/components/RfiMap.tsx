@@ -24,43 +24,43 @@ export default function RfiMap({ markers }: { markers: MarkerData[] }) {
   // Init map once
   useEffect(() => {
     if (!mapDivRef.current || mapRef.current) return;
-    const g = (window as any).google?.maps;
-    if (!g) {
+    const googleMaps = (window.google?.maps as typeof google.maps | undefined);
+    if (!googleMaps) {
       console.warn("Google Maps JS API not loaded yet");
       return;
     }
-    mapRef.current = new g.Map(mapDivRef.current, {
+    mapRef.current = new googleMaps.Map(mapDivRef.current, {
       center: { lat: 18.2208, lng: -66.5901 }, // Puerto Rico
       zoom: 8,
       mapTypeControl: false,
     });
-    infoRef.current = new g.InfoWindow();
+    infoRef.current = new googleMaps.InfoWindow();
   }, []);
 
   // Update markers when data changes
   useEffect(() => {
-    const g = (window as any).google?.maps;
+    const googleMaps = (window as any).google?.maps;
     const map = mapRef.current;
-    if (!g || !map) return;
+    if (!googleMaps || !map) return;
 
     // Clear previous markers
-    markerObjsRef.current.forEach((m) => m.setMap(null));
+    markerObjsRef.current.forEach((marker) => marker.setMap(null));
     markerObjsRef.current = [];
 
     if (!markers?.length) return;
 
-    const bounds = new g.LatLngBounds();
+    const bounds = new googleMaps.LatLngBounds();
 
-    markers.forEach((m) => {
-      const marker = new g.Marker({
-        position: m.position,
+    markers.forEach((markerData) => {
+      const marker = new googleMaps.Marker({
+        position: markerData.position,
         map,
-        title: m.name,
+        title: markerData.name,
       });
       markerObjsRef.current.push(marker);
-      bounds.extend(m.position);
+      bounds.extend(markerData.position);
 
-      const html = buildInfoHtml(m);
+      const html = buildInfoHtml(markerData);
       marker.addListener("click", () => {
         infoRef.current!.setContent(html);
         infoRef.current!.open({ anchor: marker, map });
@@ -79,25 +79,25 @@ export default function RfiMap({ markers }: { markers: MarkerData[] }) {
   return <div ref={mapDivRef} className="w-full h-[70vh] rounded-xl shadow" />;
 }
 
-function buildInfoHtml(m: MarkerData) {
+function buildInfoHtml(marker: MarkerData) {
   const rows: string[] = [];
-  if (m.category) rows.push(`<div><strong>Category:</strong> ${escapeHtml(m.category)}</div>`);
-  if (m.address) rows.push(`<div><strong>Address:</strong> ${escapeHtml(m.address)}</div>`);
-  if (m.phone) rows.push(`<div><strong>Phone:</strong> ${escapeHtml(m.phone)}</div>`);
-  if (m.website)
+  if (marker.category) rows.push(`<div><strong>Category:</strong> ${escapeHtml(marker.category)}</div>`);
+  if (marker.address) rows.push(`<div><strong>Address:</strong> ${escapeHtml(marker.address)}</div>`);
+  if (marker.phone) rows.push(`<div><strong>Phone:</strong> ${escapeHtml(marker.phone)}</div>`);
+  if (marker.website)
     rows.push(
-      `<div><strong>Website:</strong> <a href="${encodeURI(m.website)}" target="_blank" rel="noreferrer">${escapeHtml(
-        m.website
+      `<div><strong>Website:</strong> <a href="${encodeURI(marker.website)}" target="_blank" rel="noreferrer">${escapeHtml(
+        marker.website
       )}</a></div>`
     );
-  if (m.description) rows.push(`<div style="margin-top:6px">${escapeHtml(m.description)}</div>`);
-  if (m.tags?.length) rows.push(`<div style="margin-top:6px"><strong>Tags:</strong> ${m.tags.map(escapeHtml).join(", ")}</div>`);
-  return `<div style="max-width:260px"><div style="font-weight:600;margin-bottom:4px">${escapeHtml(m.name)}</div>${rows.join(
+  if (marker.description) rows.push(`<div style="margin-top:6px">${escapeHtml(marker.description)}</div>`);
+  if (marker.tags?.length) rows.push(`<div style="margin-top:6px"><strong>Tags:</strong> ${marker.tags.map(escapeHtml).join(", ")}</div>`);
+  return `<div style="max-width:260px"><div style="font-weight:600;margin-bottom:4px">${escapeHtml(marker.name)}</div>${rows.join(
     ""
   )}</div>`;
 }
 
-function escapeHtml(s: string) {
-  return s.replace(/[&<>"']/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]!));
+function escapeHtml(str: string) {
+  return str.replace(/[&<>"']/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]!));
 }
 

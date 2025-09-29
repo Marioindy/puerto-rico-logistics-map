@@ -23,17 +23,35 @@ const outDir = path.join(repoRoot, "scripts");
 const outFile = path.join(outDir, "seedFacilities.json");
 
 // ---------- helpers ----------
-function asString(v: any): string | undefined {
-  if (v == null) return undefined;
-  if (typeof v === "string") return v.trim() || undefined;
-  if (typeof v === "number") return String(v);
+function asString(value: any): string | undefined {
+  if (value === null || value === undefined) return undefined;
+  if (typeof value === "string") return value.trim() || undefined;
+  if (typeof value === "number") return String(value);
   return undefined;
 }
 
-function extractText(vars: any[], ...keys: string[]): string | undefined {
+type Variable = {
+  key?: string;
+  label?: string;
+  value?: unknown;
+  text?: unknown;
+  content?: unknown;
+  data?: unknown;
+};
+
+function extractText(vars: Variable[], ...keys: string[]): string | undefined {
   for (const key of keys) {
-    const hit = vars.find((v: any) => {
-      const k = (v?.key ?? v?.label ?? "").toString().toLowerCase();
+    const hit = vars.find((variable: Variable) => {
+      const k = (variable?.key ?? variable?.label ?? "").toString().toLowerCase();
+      return k.includes(key.toLowerCase());
+    });
+    if (!hit) continue;
+    const val = hit.value ?? hit.text ?? hit.content ?? hit.data;
+    const str = asString(val);
+    if (str) return str;
+  }
+  return undefined;
+}
       return k.includes(key.toLowerCase());
     });
     if (!hit) continue;
@@ -45,10 +63,10 @@ function extractText(vars: any[], ...keys: string[]): string | undefined {
 }
 
 // DJB2 hash → uint32
-function hash32(s: string): number {
-  let h = 5381 >>> 0;
-  for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) >>> 0;
-  return h >>> 0;
+function hash32(str: string): number {
+  let hash = 5381 >>> 0;
+  for (let i = 0; i < str.length; i++) hash = ((hash << 5) + hash + str.charCodeAt(i)) >>> 0;
+  return hash >>> 0;
 }
 
 // Map [0,1] into Puerto Rico bounding box (shrunk a bit to avoid edges)

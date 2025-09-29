@@ -44,23 +44,23 @@ export default function RfiMap({ markers }: { markers: MarkerData[] }) {
     if (!g || !map) return;
 
     // Clear previous markers
-    markerObjsRef.current.forEach((m) => m.setMap(null));
+    markerObjsRef.current.forEach((marker) => marker.setMap(null));
     markerObjsRef.current = [];
 
     if (!markers?.length) return;
 
     const bounds = new g.LatLngBounds();
 
-    markers.forEach((m) => {
+    markers.forEach((markerData) => {
       const marker = new g.Marker({
-        position: m.position,
+        position: markerData.position,
         map,
-        title: m.name,
+        title: markerData.name,
       });
       markerObjsRef.current.push(marker);
-      bounds.extend(m.position);
+      bounds.extend(markerData.position);
 
-      const html = buildInfoHtml(m);
+      const html = buildInfoHtml(markerData);
       marker.addListener("click", () => {
         infoRef.current!.setContent(html);
         infoRef.current!.open({ anchor: marker, map });
@@ -79,26 +79,26 @@ export default function RfiMap({ markers }: { markers: MarkerData[] }) {
   return <div ref={mapDivRef} className="w-full h-[70vh] rounded-xl shadow" />;
 }
 
-function buildInfoHtml(m: MarkerData) {
+function buildInfoHtml(marker: MarkerData) {
   const rows: string[] = [];
-  if (m.category) rows.push(`<div><strong>Category:</strong> ${escapeHtml(m.category)}</div>`);
-  if (m.address) rows.push(`<div><strong>Address:</strong> ${escapeHtml(m.address)}</div>`);
-  if (m.phone) rows.push(`<div><strong>Phone:</strong> ${escapeHtml(m.phone)}</div>`);
-  if (m.website)
+  if (marker.category) rows.push(`<div><strong>Category:</strong> ${escapeHtml(marker.category)}</div>`);
+  if (marker.address) rows.push(`<div><strong>Address:</strong> ${escapeHtml(marker.address)}</div>`);
+  if (marker.phone) rows.push(`<div><strong>Phone:</strong> ${escapeHtml(marker.phone)}</div>`);
+  if (marker.website)
     rows.push(
-      `<div><strong>Website:</strong> <a href="${encodeURI(m.website)}" target="_blank" rel="noreferrer">${escapeHtml(
-        m.website
+      `<div><strong>Website:</strong> <a href="${encodeURI(marker.website)}" target="_blank" rel="noreferrer">${escapeHtml(
+        marker.website
       )}</a></div>`
     );
-  if (m.description) rows.push(`<div style="margin-top:6px">${escapeHtml(m.description)}</div>`);
-  if (m.tags?.length) rows.push(`<div style="margin-top:6px"><strong>Tags:</strong> ${m.tags.map(escapeHtml).join(", ")}</div>`);
-  return `<div style="max-width:260px"><div style="font-weight:600;margin-bottom:4px">${escapeHtml(m.name)}</div>${rows.join(
+  if (marker.description) rows.push(`<div style="margin-top:6px">${escapeHtml(marker.description)}</div>`);
+  if (marker.tags?.length) rows.push(`<div style="margin-top:6px"><strong>Tags:</strong> ${marker.tags.map(escapeHtml).join(", ")}</div>`);
+  return `<div style="max-width:260px"><div style="font-weight:600;margin-bottom:4px">${escapeHtml(marker.name)}</div>${rows.join(
     ""
   )}</div>`;
 }
 
-function escapeHtml(s: string) {
-  return s.replace(/[&<>"']/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]!));
+function escapeHtml(str: string) {
+  return str.replace(/[&<>"']/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]!));
 }
 
 
