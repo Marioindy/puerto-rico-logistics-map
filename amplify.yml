@@ -8,9 +8,9 @@ applications:
             - pnpm install --frozen-lockfile
         build:
           commands:
-            # Set environment variables for build
-            - export NEXT_PUBLIC_SITE_URL="https://$AWS_BRANCH.$AWS_APP_ID.amplifyapp.com"
-            - export NEXT_PUBLIC_CONVEX_URL="https://earnest-cormorant-477.convex.cloud"
+            # Write AWS environment variables to .env.production for Next.js
+            - env | grep -e NEXT_PUBLIC_ >> .env.production
+            - env | grep -e CONVEX_ >> .env.production
             - pnpm run build
       artifacts:
         baseDirectory: .next
