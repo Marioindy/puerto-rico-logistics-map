@@ -6,54 +6,40 @@ applications:
           commands:
             - corepack enable pnpm
             - pnpm install --frozen-lockfile
-            - |
-              node - <<'NODE'
-              const fs = require('fs');
-              const secretsPayload = process.env.secrets;
-              const envVars = process.env;
-
-              let secrets = {};
-              if (secretsPayload) {
-                try {
-                  secrets = JSON.parse(secretsPayload);
-                } catch (error) {
-                  console.error('Failed to parse Amplify secrets JSON:', error);
-                  process.exit(1);
-                }
-              } else {
-                console.warn('Amplify secrets payload missing. Continuing with available environment variables.');
-              }
-
-              const desiredKeys = [
-                'CONVEX_DEPLOYMENT',
-                'CONVEX_DEPLOY_KEY',
-                'CONVEX_URL',
-                'NEXT_PUBLIC_CONVEX_URL',
-                'PPLX',
-                'NEXT_PUBLIC_GOOGLE_MAPS_API_KEY'
-              ];
-
-              const lines = [];
-              for (const key of desiredKeys) {
-                const value = envVars[key] ?? secrets[key];
-                if (!value) {
-                  console.warn(`Environment/secret value missing for ${key}`);
-                  continue;
-                }
-                lines.push(`${key}=${value}`);
-              }
-
-              if (!lines.length) {
-                console.warn('No environment secrets written to env files.');
-                process.exit(0);
-              }
-
-              const payload = lines.join('\n') + '\n';
-              fs.writeFileSync('.env.local', payload, { encoding: 'utf8' });
-              fs.writeFileSync('.env.production', payload, { encoding: 'utf8' });
-              NODE
         build:
           commands:
+            - 'echo "secrets env var present: $([ -n "$secrets" ] && echo YES || echo NO)"'
+            - |
+              if [ -n "$secrets" ]; then
+                echo "Found secrets JSON, parsing..."
+                value=$(echo "$secrets" | sed -n 's/.*"CONVEX_DEPLOYMENT":"\([^"}]*\)".*/\1/p')
+                if [ -n "$value" ]; then export CONVEX_DEPLOYMENT="$value"; fi
+                value=$(echo "$secrets" | sed -n 's/.*"CONVEX_DEPLOY_KEY":"\([^"}]*\)".*/\1/p')
+                if [ -n "$value" ]; then export CONVEX_DEPLOY_KEY="$value"; fi
+                value=$(echo "$secrets" | sed -n 's/.*"CONVEX_URL":"\([^"}]*\)".*/\1/p')
+                if [ -n "$value" ]; then export CONVEX_URL="$value"; fi
+                value=$(echo "$secrets" | sed -n 's/.*"NEXT_PUBLIC_CONVEX_URL":"\([^"}]*\)".*/\1/p')
+                if [ -n "$value" ]; then export NEXT_PUBLIC_CONVEX_URL="$value"; fi
+                value=$(echo "$secrets" | sed -n 's/.*"PPLX":"\([^"}]*\)".*/\1/p')
+                if [ -n "$value" ]; then export PPLX="$value"; fi
+                value=$(echo "$secrets" | sed -n 's/.*"NEXT_PUBLIC_GOOGLE_MAPS_API_KEY":"\([^"}]*\)".*/\1/p')
+                if [ -n "$value" ]; then export NEXT_PUBLIC_GOOGLE_MAPS_API_KEY="$value"; fi
+                echo "Parsed CONVEX_URL length: ${#CONVEX_URL}"
+              else
+                echo "No secrets JSON detected; using existing environment variables."
+              fi
+            - 'rm -f .env.production .env.local'
+            - 'touch .env.production .env.local'
+            - |
+              for key in CONVEX_DEPLOYMENT CONVEX_DEPLOY_KEY CONVEX_URL NEXT_PUBLIC_CONVEX_URL PPLX NEXT_PUBLIC_GOOGLE_MAPS_API_KEY; do
+                value="$(eval echo \"\${$key}\")"
+                if [ -n "$value" ]; then
+                  printf "%s=%s\n" "$key" "$value" >> .env.production
+                  printf "%s=%s\n" "$key" "$value" >> .env.local
+                else
+                  echo "Warning: $key is unset after parsing." >&2
+                fi
+              done
             - pnpm run build
       artifacts:
         baseDirectory: .next

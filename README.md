@@ -61,7 +61,7 @@ app/<page-name>/<page-name>.tsx      # Page implementation (can be server or cli
 app/<page-name>/page.tsx             # Re-export wrapper required by Next.js
 app/<page-name>/components/          # Components unique to that page
 ```
-Shared UI belongs in `components/`. Do not add placeholders—only commit folders/files once they contain real code.
+Shared UI belongs in `components/`. Do not add placeholders-only commit folders/files once they contain real code.
 
 ## Getting Started
 1. Copy `.env.local.example` to `.env.local` and fill in real credentials.
@@ -77,11 +77,12 @@ Convex and Amplify are not fully configured yet; follow their respective docs wh
 
 ### Configure environment variables
 - Local: copy `.env.local.example` to `.env.local` and set:
-  - `PPLX` — Perplexity API key (server-only)
-  - `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` — Google Maps key (client)
+  - `PPLX` - Perplexity API key (server-only)
+  - `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` - Google Maps key (client)
 - Amplify Hosting: add the same variables in "Environment variables". Do not prefix `PPLX` with `NEXT_PUBLIC_`.
 
 ### Amplify secrets
-- Grant the Amplify service role `ssm:GetParametersByPath` on `/amplify/<app-id>/<branch>/*` so the build worker can read secret values.
-- Secrets named `CONVEX_URL`, `NEXT_PUBLIC_CONVEX_URL`, `CONVEX_DEPLOYMENT`, `CONVEX_DEPLOY_KEY`, `PPLX`, and `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` are parsed from `process.env.secrets` in `amplify.yml` and written to `.env.local` and `.env.production` during `preBuild`.
-- Keep secret keys aligned with the runtime env var names; the build step falls back to plain env vars when a secret is missing.
+- Create SecureString parameters manually at /amplify/<app-id>/<branch>/<SECRET_NAME> (no branch-hash suffix) so Amplify picks them up.
+- Grant the Amplify service role ssm:GetParametersByPath permission on that prefix to allow build-time access.
+- During preBuild, the amplify.yml build script parses the secrets JSON payload and exports CONVEX_URL, NEXT_PUBLIC_CONVEX_URL, CONVEX_DEPLOYMENT, CONVEX_DEPLOY_KEY, PPLX, and NEXT_PUBLIC_GOOGLE_MAPS_API_KEY, writing them to .env.local and .env.production for Next.js.
+- Keep secret names aligned with the runtime env var keys; the build step falls back to existing env vars if a secret is missing.
