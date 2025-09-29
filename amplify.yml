@@ -12,17 +12,17 @@ applications:
             - |
               if [ -n "$secrets" ]; then
                 echo "Found secrets JSON, parsing..."
-                value=$(echo "$secrets" | sed -n 's/.*"CONVEX_DEPLOYMENT":"\([^"}]*\)".*/\1/p')
+                value=$(echo "$secrets" | sed -n 's/.*"CONVEX_DEPLOYMENT":"\([^"]*\)".*/\1/p')
                 if [ -n "$value" ]; then export CONVEX_DEPLOYMENT="$value"; fi
-                value=$(echo "$secrets" | sed -n 's/.*"CONVEX_DEPLOY_KEY":"\([^"}]*\)".*/\1/p')
+                value=$(echo "$secrets" | sed -n 's/.*"CONVEX_DEPLOY_KEY":"\([^"]*\)".*/\1/p')
                 if [ -n "$value" ]; then export CONVEX_DEPLOY_KEY="$value"; fi
-                value=$(echo "$secrets" | sed -n 's/.*"CONVEX_URL":"\([^"}]*\)".*/\1/p')
+                value=$(echo "$secrets" | sed -n 's/.*"CONVEX_URL":"\([^"]*\)".*/\1/p')
                 if [ -n "$value" ]; then export CONVEX_URL="$value"; fi
-                value=$(echo "$secrets" | sed -n 's/.*"NEXT_PUBLIC_CONVEX_URL":"\([^"}]*\)".*/\1/p')
+                value=$(echo "$secrets" | sed -n 's/.*"NEXT_PUBLIC_CONVEX_URL":"\([^"]*\)".*/\1/p')
                 if [ -n "$value" ]; then export NEXT_PUBLIC_CONVEX_URL="$value"; fi
-                value=$(echo "$secrets" | sed -n 's/.*"PPLX":"\([^"}]*\)".*/\1/p')
+                value=$(echo "$secrets" | sed -n 's/.*"PPLX":"\([^"]*\)".*/\1/p')
                 if [ -n "$value" ]; then export PPLX="$value"; fi
-                value=$(echo "$secrets" | sed -n 's/.*"NEXT_PUBLIC_GOOGLE_MAPS_API_KEY":"\([^"}]*\)".*/\1/p')
+                value=$(echo "$secrets" | sed -n 's/.*"NEXT_PUBLIC_GOOGLE_MAPS_API_KEY":"\([^"]*\)".*/\1/p')
                 if [ -n "$value" ]; then export NEXT_PUBLIC_GOOGLE_MAPS_API_KEY="$value"; fi
                 echo "Parsed CONVEX_URL length: ${#CONVEX_URL}"
               else
