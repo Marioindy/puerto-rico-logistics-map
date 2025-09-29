@@ -21,9 +21,9 @@
 
 ## Secrets & Environment Variables
 - `PPLX`: server-only Perplexity key (used in `app/api/chat/route.ts`).
-  - **Production**: Set as Secret in Amplify console (Hosting → Secrets)
+  - **Production**: Set as Secret in Amplify console (Hosting -> Secrets)
   - **Local dev**: Use `npx ampx sandbox secret set PPLX` or add to `.env.local`
-  - **Code**: Access via `secret("PPLX")` from `@aws-amplify/backend`
+  - **Code**: Resolve with `secret("PPLX")` from `@aws-amplify/backend`, ensure the value is a non-empty string, fall back to `process.env.PPLX` for local overrides, and return a descriptive 500 if the secret is missing or malformed before calling external APIs.
 - `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY`: client map key (used in `MapView` and `InteractiveMap`).
 - Optional placeholders: `CONVEX_DEPLOYMENT`, `AMPLIFY_ENV`.
 
@@ -34,5 +34,7 @@ See `docs/AMPLIFY_SECRETS.md` for complete setup guide.
 ## Editing & Build Hygiene
 - Avoid literal escape sequences (`\n`, `` `r`n ``); write real newlines.
 - Save source files as UTF-8 without BOM (PowerShell: `Set-Content -Encoding UTF8`).
-- Run `npm run typecheck` and `npm run build` locally before pushing structural changes.
+- Run `pnpm run typecheck` and `pnpm run build` locally before pushing structural changes.
 - If automating edits, prefer here-strings and keep docs (`README.md`, `agents.md`, `Claude.md`) in sync.
+
+
