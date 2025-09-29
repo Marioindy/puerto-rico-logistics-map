@@ -81,3 +81,7 @@ Convex and Amplify are not fully configured yet; follow their respective docs wh
   - `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` — Google Maps key (client)
 - Amplify Hosting: add the same variables in "Environment variables". Do not prefix `PPLX` with `NEXT_PUBLIC_`.
 
+### Amplify secrets
+- Grant the Amplify service role `ssm:GetParametersByPath` on `/amplify/<app-id>/<branch>/*` so the build worker can read secret values.
+- Secrets named `CONVEX_URL`, `NEXT_PUBLIC_CONVEX_URL`, `CONVEX_DEPLOYMENT`, `CONVEX_DEPLOY_KEY`, `PPLX`, and `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` are parsed from `process.env.secrets` in `amplify.yml` and written to `.env.local` and `.env.production` during `preBuild`.
+- Keep secret keys aligned with the runtime env var names; the build step falls back to plain env vars when a secret is missing.

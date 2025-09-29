@@ -6,10 +6,52 @@ applications:
           commands:
             - corepack enable pnpm
             - pnpm install --frozen-lockfile
-            - echo "CONVEX_DEPLOYMENT=$CONVEX_DEPLOYMENT" >> .env.production
-            - echo "CONVEX_URL=$CONVEX_URL" >> .env.production
-            - echo "CONVEX_DEPLOY_KEY=$CONVEX_DEPLOY_KEY" >> .env.production
-            - echo "PPLX=$PPLX" >> .env.production
+            - |
+              node - <<'NODE'
+              const fs = require('fs');
+              const secretsPayload = process.env.secrets;
+              const envVars = process.env;
+
+              let secrets = {};
+              if (secretsPayload) {
+                try {
+                  secrets = JSON.parse(secretsPayload);
+                } catch (error) {
+                  console.error('Failed to parse Amplify secrets JSON:', error);
+                  process.exit(1);
+                }
+              } else {
+                console.warn('Amplify secrets payload missing. Continuing with available environment variables.');
+              }
+
+              const desiredKeys = [
+                'CONVEX_DEPLOYMENT',
+                'CONVEX_DEPLOY_KEY',
+                'CONVEX_URL',
+                'NEXT_PUBLIC_CONVEX_URL',
+                'PPLX',
+                'NEXT_PUBLIC_GOOGLE_MAPS_API_KEY'
+              ];
+
+              const lines = [];
+              for (const key of desiredKeys) {
+                const value = envVars[key] ?? secrets[key];
+                if (!value) {
+                  console.warn(`Environment/secret value missing for ${key}`);
+                  continue;
+                }
+                lines.push(`${key}=${value}`);
+              }
+
+              if (!lines.length) {
+                console.warn('No environment secrets written to env files.');
+                process.exit(0);
+              }
+
+              const payload = lines.join('\n') + '\n';
+              fs.writeFileSync('.env.local', payload, { encoding: 'utf8' });
+              fs.writeFileSync('.env.production', payload, { encoding: 'utf8' });
+              NODE
         build:
           commands:
             - pnpm run build
