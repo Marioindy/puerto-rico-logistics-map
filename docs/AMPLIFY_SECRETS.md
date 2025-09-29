@@ -4,55 +4,72 @@
 
 This document outlines how to manage secrets and environment variables in AWS Amplify for the Puerto Rico Logistics Map application. The chat API requires a Perplexity API key (`PPLX`) that must be securely managed.
 
-## ⚠️ IMPORTANT: Secrets vs Environment Variables
+> **🔍 Critical Discovery**: Based on extensive testing and a forum solution, Amplify Console Secrets **do not work** as documented. They create parameters with branch hash suffixes that Amplify's auto-injection ignores. **Manual SSM parameters at exact paths are required**.
 
-| Feature | Secrets (✅ Recommended) | Environment Variables (❌ Avoid for sensitive data) |
-|---------|-------------------------|----------------------------------------------------|
-| **Purpose** | Sensitive data (API keys, passwords) | Non-sensitive configuration |
-| **Storage** | Encrypted in AWS Parameter Store | Plaintext in Amplify service |
-| **Security** | Values never exposed | **Visible in build artifacts & logs** |
-| **Access** | `secret()` function | `process.env` |
-| **Best Practice** | ✅ Use for PPLX API key | ❌ **Never** store secrets here |
+## ⚠️ IMPORTANT: The Amplify Console Secrets Problem
 
-**Key Rule**: AWS explicitly states "do not store secret values in environment variables"
+| Method | Amplify Console Secrets (❌ **BROKEN**) | Manual SSM Parameters (✅ **WORKS**) |
+|--------|----------------------------------------|-------------------------------------|
+| **Path Created** | `/amplify/app-id/branch-hash-abc123/SECRET_NAME` | `/amplify/app-id/branch/SECRET_NAME` |
+| **Amplify Auto-Injection** | ❌ Ignores these paths | ✅ Fetches from exact paths |
+| **Result** | `secrets` env var is empty | `secrets` env var contains JSON |
+| **Forum Discovery** | Creates wrong SSM paths | Creates correct SSM paths |
+
+**Key Discovery**: Amplify only looks for parameters at exact path `/amplify/{app-id}/{branch}/` - NOT the branch hash suffix path that Console Secrets creates.
 
 ## Setup Instructions
 
-### 1. AWS Amplify Console Setup (Using Secrets)
+### 1. Manual SSM Parameter Creation (✅ Working Solution)
 
-1. Navigate to your Amplify app in AWS Console
-2. Go to **Hosting** → **Secrets**
-3. Click **Manage secrets**
-4. Add the following secret:
-   - Key: `PPLX`
-   - Value: `your_perplexity_api_key`
-   - Apply to: All branches (or specific branches as needed)
+**App Configuration:**
+- App ID: `dawq158evhzhz`
+- Current Branch: `main-convex-refactor`
+- Production Branch: `main`
+
+**Critical**: Create SSM parameters at exact paths that Amplify expects:
+
+```bash
+# For current branch (main-convex-refactor):
+aws ssm put-parameter \
+  --name "/amplify/dawq158evhzhz/main-convex-refactor/PPLX" \
+  --value "your_perplexity_api_key" \
+  --type "SecureString" \
+  --overwrite
+
+# For production branch (main):
+aws ssm put-parameter \
+  --name "/amplify/dawq158evhzhz/main/PPLX" \
+  --value "your_perplexity_api_key" \
+  --type "SecureString" \
+  --overwrite
+```
+
+**Quick Setup**: Use the provided scripts:
+- `scripts/setup-ssm-secrets.sh` (Linux/Mac)
+- `scripts/setup-ssm-secrets.bat` (Windows)
+- `scripts/SSM_COMMANDS.md` (Copy-paste commands)
 
 ### 2. Build Specification Configuration
 
-The `amplify.yml` file should only handle public environment variables. Secrets are automatically available via the `secret()` function:
+The `amplify.yml` has been enhanced to implement the forum solution for parsing Amplify's `secrets` JSON environment variable:
 
-```yaml
-version: 1
-frontend:
-  phases:
-    preBuild:
-      commands:
-        - corepack enable pnpm
-        - pnpm install --frozen-lockfile
-    build:
-      commands:
-        # Only make public environment variables available to Next.js
-        - env | grep -e NEXT_PUBLIC_ >> .env.production
-        - pnpm run build
-  artifacts:
-    baseDirectory: .next
-    files:
-      - '**/*'
-  cache:
-    paths:
-      - .pnpm-store/**
-```
+**How it works:**
+1. Amplify fetches SSM parameters from `/amplify/{app-id}/{branch}/` and provides them as a single JSON variable called `secrets`
+2. Our enhanced `amplify.yml` parses this JSON to extract individual secrets
+3. Individual secrets are exported as environment variables and written to `.env.production`
+
+**Key features implemented:**
+- ✅ Robust JSON parsing with error handling
+- ✅ Comprehensive debug logging
+- ✅ Validation for critical secrets (PPLX)
+- ✅ Length validation and status reporting
+- ✅ Fallback messaging when secrets are missing
+
+**Current amplify.yml structure:**
+- Parses: `PPLX`, `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY`, and optional Convex secrets
+- Validates critical secrets before build
+- Provides detailed logging for debugging
+- Writes environment files for SSR runtime access
 
 ### 3. Local Development
 
@@ -205,43 +222,85 @@ export async function POST(req: Request) {
 ### Common Issues
 
 1. **"Missing PPLX API key" error**
-   - Verify the secret is set in Amplify console under Hosting → Secrets
-   - Ensure you're using `secret("PPLX")` not `process.env.PPLX`
-   - Check that `@aws-amplify/backend` is installed and imported
+   - ❌ **DO NOT** use Amplify Console Secrets - they create wrong paths
+   - ✅ Verify SSM parameters exist at exact path: `/amplify/dawq158evhzhz/{branch}/PPLX`
+   - ✅ Check build logs for "secrets env var present: YES"
+   - ✅ Look for "Parsed PPLX length: X" in build logs
 
-2. **Secrets not accessible at runtime**
-   - Confirm the secret is properly set in Amplify console
-   - Verify the secret name matches exactly (case-sensitive)
-   - Ensure your Amplify app has proper permissions to access Parameter Store
+2. **Empty `secrets` environment variable**
+   - ❌ Most likely using wrong SSM paths (branch hash suffixes)
+   - ✅ Recreate SSM parameters at exact paths: `/amplify/dawq158evhzhz/{branch}/`
+   - ✅ Verify app ID and branch name are correct
+   - ✅ Check AWS region matches your Amplify app
 
-3. **Local development issues**
+3. **Secrets not parsed correctly**
+   - Check build logs for JSON parsing errors
+   - Verify SSM parameter values don't contain invalid JSON characters
+   - Ensure parameter type is "SecureString"
+
+4. **Local development issues**
    - Use `npx ampx sandbox secret set PPLX` for local secrets
    - Alternatively, ensure `.env.local` exists and contains the PPLX variable
    - Restart your development server after adding secrets/environment variables
 
 ### Debugging Steps
 
-1. Check Amplify build logs for any secret-related errors
-2. Verify API route can access the secret:
+1. **Check build logs** for secrets parsing:
+   ```
+   === AWS Amplify Secrets Parsing ===
+   secrets env var present: YES
+   secrets JSON length: 156
+   Found secrets JSON, parsing individual secrets...
+   Parsed PPLX length: 45
+   ```
+
+2. **Verify SSM parameters** exist at correct paths:
+   ```bash
+   aws ssm get-parameters-by-path --path "/amplify/dawq158evhzhz/main-convex-refactor" --recursive
+   ```
+
+3. **Test individual parameter** access:
+   ```bash
+   aws ssm get-parameter --name "/amplify/dawq158evhzhz/main-convex-refactor/PPLX" --with-decryption
+   ```
+
+4. **Verify runtime access** in API routes:
    ```typescript
    console.log("PPLX secret exists:", !!secret("PPLX"));
    ```
-3. Test locally first using sandbox secrets, then deploy to ensure consistency
-4. Check AWS Parameter Store in the console to verify secret storage
 
 ## Related Files
 
-- `amplify.yml` - Build specification
+### Core Implementation
+- `amplify.yml` - Enhanced build specification with secrets JSON parsing
+- `app/api/chat/route.ts` - API route that uses the PPLX key with `secret()` function
+
+### Setup Scripts
+- `scripts/setup-ssm-secrets.sh` - Interactive SSM parameter setup (Linux/Mac)
+- `scripts/setup-ssm-secrets.bat` - Command reference for Windows
+- `scripts/SSM_COMMANDS.md` - Copy-paste AWS CLI commands
+
+### Configuration
 - `.env.local` - Local development environment
 - `.env.local.example` - Template for environment variables
-- `app/api/chat/route.ts` - API route that uses the PPLX key
+- `lib/env/schema.ts` - Environment variable validation schemas
+
+### Components
 - `components/ChatbotFab.tsx` - Chat interface component
+- `components/InteractiveMap.tsx` - Map component using Google Maps API key
+- `components/MapView.tsx` - Map view component
 
 ## References
 
 - [AWS Amplify Environment Variables](https://docs.aws.amazon.com/amplify/latest/userguide/environment-variables.html)
+- [AWS Systems Manager Parameter Store](https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-parameter-store.html)
 - [Next.js Environment Variables](https://nextjs.org/docs/basic-features/environment-variables)
 - [AWS Secrets Manager](https://docs.aws.amazon.com/secretsmanager/)
+- [Forum Solution Reference](https://forums.aws.amazon.com/) - Manual SSM parameter discovery
+
+## Summary
+
+The **key insight** from the forum solution is that Amplify Console Secrets create SSM parameters with branch hash suffixes that Amplify's auto-injection ignores. **Manual SSM parameters at exact paths** `/amplify/{app-id}/{branch}/SECRET_NAME` are required for the `secrets` JSON environment variable to be populated correctly.
 
 
 

@@ -4,42 +4,117 @@ applications:
       phases:
         preBuild:
           commands:
+            - 'echo "=== Pre-Build Environment Check ==="'
+            - 'echo "Node version: $(node --version)"'
+            - 'echo "PNPM version: $(pnpm --version)"'
+            - 'echo "AWS Region: ${AWS_REGION:-not-set}"'
+            - 'echo "Amplify App ID: ${AWS_APP_ID:-not-set}"'
+            - 'echo "Branch: ${AWS_BRANCH:-not-set}"'
+            - 'echo "Expected SSM path: /amplify/dawq158evhzhz/${AWS_BRANCH:-unknown}/SECRET_NAME"'
+            - 'echo "====================================="'
             - corepack enable pnpm
             - pnpm install --frozen-lockfile
         build:
           commands:
-            - 'echo "secrets env var present: $([ -n "$secrets" ] && echo YES || echo NO)"'
+            # Enhanced AWS Amplify Secrets Solution - Based on forum solution
+            - 'echo "=== AWS Amplify Secrets Parsing ==="'
+            - 'echo "secrets env var present: $([ -n "$secrets" ] && echo "YES" || echo "NO")"'
+            - 'if [ -n "$secrets" ]; then echo "secrets JSON length: ${#secrets}"; fi'
             - |
               if [ -n "$secrets" ]; then
-                echo "Found secrets JSON, parsing..."
-                value=$(echo "$secrets" | sed -n 's/.*"CONVEX_DEPLOYMENT":"\([^"]*\)".*/\1/p')
-                if [ -n "$value" ]; then export CONVEX_DEPLOYMENT="$value"; fi
-                value=$(echo "$secrets" | sed -n 's/.*"CONVEX_DEPLOY_KEY":"\([^"]*\)".*/\1/p')
-                if [ -n "$value" ]; then export CONVEX_DEPLOY_KEY="$value"; fi
-                value=$(echo "$secrets" | sed -n 's/.*"CONVEX_URL":"\([^"]*\)".*/\1/p')
-                if [ -n "$value" ]; then export CONVEX_URL="$value"; fi
-                value=$(echo "$secrets" | sed -n 's/.*"NEXT_PUBLIC_CONVEX_URL":"\([^"]*\)".*/\1/p')
-                if [ -n "$value" ]; then export NEXT_PUBLIC_CONVEX_URL="$value"; fi
-                value=$(echo "$secrets" | sed -n 's/.*"PPLX":"\([^"]*\)".*/\1/p')
-                if [ -n "$value" ]; then export PPLX="$value"; fi
-                value=$(echo "$secrets" | sed -n 's/.*"NEXT_PUBLIC_GOOGLE_MAPS_API_KEY":"\([^"]*\)".*/\1/p')
-                if [ -n "$value" ]; then export NEXT_PUBLIC_GOOGLE_MAPS_API_KEY="$value"; fi
+                echo "Found secrets JSON, parsing individual secrets..."
+
+                # Parse PPLX (Perplexity API key)
+                export PPLX=$(echo "$secrets" | sed -n 's/.*"PPLX":"\([^"]*\)".*/\1/p')
+                echo "Parsed PPLX length: ${#PPLX}"
+
+                # Parse Convex secrets
+                export CONVEX_DEPLOYMENT=$(echo "$secrets" | sed -n 's/.*"CONVEX_DEPLOYMENT":"\([^"]*\)".*/\1/p')
+                export CONVEX_DEPLOY_KEY=$(echo "$secrets" | sed -n 's/.*"CONVEX_DEPLOY_KEY":"\([^"]*\)".*/\1/p')
+                export CONVEX_URL=$(echo "$secrets" | sed -n 's/.*"CONVEX_URL":"\([^"]*\)".*/\1/p')
+                export NEXT_PUBLIC_CONVEX_URL=$(echo "$secrets" | sed -n 's/.*"NEXT_PUBLIC_CONVEX_URL":"\([^"]*\)".*/\1/p')
                 echo "Parsed CONVEX_URL length: ${#CONVEX_URL}"
+                echo "Parsed NEXT_PUBLIC_CONVEX_URL length: ${#NEXT_PUBLIC_CONVEX_URL}"
+
+                # Parse Google Maps API key
+                export NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=$(echo "$secrets" | sed -n 's/.*"NEXT_PUBLIC_GOOGLE_MAPS_API_KEY":"\([^"]*\)".*/\1/p')
+                echo "Parsed GOOGLE_MAPS_API_KEY length: ${#NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}"
+
+                echo "All secrets parsed successfully from Amplify secrets JSON"
               else
                 echo "No secrets JSON detected; using existing environment variables."
+                echo "Note: Manual SSM parameters should be created at /amplify/dawq158evhzhz/{branch}/"
               fi
+            - 'echo "=== Writing Environment Files ==="'
             - 'rm -f .env.production .env.local'
             - 'touch .env.production .env.local'
             - |
+              # Validate critical secrets before writing
+              CRITICAL_SECRETS="PPLX"
+              OPTIONAL_SECRETS="CONVEX_DEPLOYMENT CONVEX_DEPLOY_KEY CONVEX_URL NEXT_PUBLIC_CONVEX_URL NEXT_PUBLIC_GOOGLE_MAPS_API_KEY"
+
+              echo "Validating critical secrets..."
+              for key in $CRITICAL_SECRETS; do
+                value="$(eval echo \"\${$key}\")"
+                if [ -z "$value" ]; then
+                  echo "ERROR: Critical secret $key is missing!" >&2
+                  echo "Ensure SSM parameter exists at: /amplify/dawq158evhzhz/{branch}/$key" >&2
+                fi
+              done
+
+              echo "Writing all secrets to environment files..."
               for key in CONVEX_DEPLOYMENT CONVEX_DEPLOY_KEY CONVEX_URL NEXT_PUBLIC_CONVEX_URL PPLX NEXT_PUBLIC_GOOGLE_MAPS_API_KEY; do
                 value="$(eval echo \"\${$key}\")"
                 if [ -n "$value" ]; then
                   printf "%s=%s\n" "$key" "$value" >> .env.production
                   printf "%s=%s\n" "$key" "$value" >> .env.local
+                  echo "✓ $key written to env files (length: ${#value})"
                 else
-                  echo "Warning: $key is unset after parsing." >&2
+                  echo "⚠ Warning: $key is unset after parsing" >&2
                 fi
               done
+
+              echo "Environment files created successfully"
+            - 'echo "=== Build-Time Validation ==="'
+            - |
+              # Validate critical secrets are available for build
+              echo "Performing final validation before build..."
+
+              VALIDATION_ERRORS=0
+
+              # Check critical secrets
+              if [ -z "$PPLX" ]; then
+                echo "❌ CRITICAL: PPLX secret is missing" >&2
+                echo "   Required for chat API functionality" >&2
+                VALIDATION_ERRORS=$((VALIDATION_ERRORS + 1))
+              else
+                echo "✅ PPLX secret found (length: ${#PPLX})"
+              fi
+
+              # Check .env files were created
+              if [ ! -f ".env.production" ]; then
+                echo "❌ CRITICAL: .env.production not created" >&2
+                VALIDATION_ERRORS=$((VALIDATION_ERRORS + 1))
+              else
+                echo "✅ .env.production created ($(wc -l < .env.production) lines)"
+              fi
+
+              # Show environment file contents (without values)
+              echo "Environment variables set:"
+              if [ -f ".env.production" ]; then
+                sed 's/=.*/=***/' .env.production | sed 's/^/  /'
+              fi
+
+              # Summary
+              echo ""
+              if [ $VALIDATION_ERRORS -eq 0 ]; then
+                echo "🎉 All validations passed! Proceeding with build..."
+              else
+                echo "💥 $VALIDATION_ERRORS validation error(s) found!"
+                echo "   Build may fail or features may not work correctly"
+                echo "   Check SSM parameters at: /amplify/dawq158evhzhz/{branch}/"
+              fi
+              echo "============================================"
             - pnpm run build
       artifacts:
         baseDirectory: .next

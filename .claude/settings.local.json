@@ -19,7 +19,10 @@
       "Bash(npx convex:*)",
       "Read(//c/Users/Jesie/.convex/**)",
       "Bash(echo $CONVEX_DEPLOYMENT)",
-      "Bash(git checkout:*)"
+      "Bash(git checkout:*)",
+      "Bash(cd:*)",
+      "Bash(pnpm run:*)",
+      "Read(//c/Users/Jesie/**)"
     ],
     "deny": [],
     "ask": []
