@@ -19,16 +19,16 @@
 - Landing page code lives in `app/homepage/homepage.tsx` and its components in `app/homepage/components/`.
 - RFI map workspace lives in `app/rfimap/rfimap.tsx` with its unique components under `app/rfimap/components/`.
 
-## Secrets & Environment Variables
+## Environment Variables
 - `PPLX`: server-only Perplexity key (used in `app/api/chat/route.ts`).
-  - **Production**: Set as Secret in Amplify console (Hosting -> Secrets)
-  - **Local dev**: Use `npx ampx sandbox secret set PPLX` or add to `.env.local`
-  - **Code**: Resolve with `secret("PPLX")` from `@aws-amplify/backend`, ensure the value is a non-empty string, fall back to `process.env.PPLX` for local overrides, and return a descriptive 500 if the secret is missing or malformed before calling external APIs.
+  - **Production**: Set in Amplify console (Hosting -> Environment variables)
+  - **Local dev**: Add to `.env.local`
+  - **Code**: Access with `process.env.PPLX`, return descriptive 500 if missing or malformed.
 - `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY`: client map key (used in `MapView` and `InteractiveMap`).
 - Optional placeholders: `CONVEX_DEPLOYMENT`, `AMPLIFY_ENV`.
 
-## AWS Amplify Secrets
-⚠️ **Important**: Use Secrets for sensitive data (API keys), not Environment Variables.
+## AWS Amplify Configuration
+Set environment variables in Amplify console under Hosting → Environment variables.
 See `docs/AMPLIFY_SECRETS.md` for complete setup guide.
 
 ## Editing & Build Hygiene

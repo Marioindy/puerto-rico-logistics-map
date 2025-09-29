@@ -1,175 +1,110 @@
-# AWS Amplify Secrets Management Guide
+# AWS Amplify Environment Variables Guide
 
 ## Overview
 
-This document outlines how to manage secrets and environment variables in AWS Amplify for the Puerto Rico Logistics Map application. The chat API requires a Perplexity API key (`PPLX`) that must be securely managed.
-
-> **🔍 Critical Discovery**: Based on extensive testing and a forum solution, Amplify Console Secrets **do not work** as documented. They create parameters with branch hash suffixes that Amplify's auto-injection ignores. **Manual SSM parameters at exact paths are required**.
-
-## ⚠️ IMPORTANT: The Amplify Console Secrets Problem
-
-| Method | Amplify Console Secrets (❌ **BROKEN**) | Manual SSM Parameters (✅ **WORKS**) |
-|--------|----------------------------------------|-------------------------------------|
-| **Path Created** | `/amplify/app-id/branch-hash-abc123/SECRET_NAME` | `/amplify/app-id/branch/SECRET_NAME` |
-| **Amplify Auto-Injection** | ❌ Ignores these paths | ✅ Fetches from exact paths |
-| **Result** | `secrets` env var is empty | `secrets` env var contains JSON |
-| **Forum Discovery** | Creates wrong SSM paths | Creates correct SSM paths |
-
-**Key Discovery**: Amplify only looks for parameters at exact path `/amplify/{app-id}/{branch}/` - NOT the branch hash suffix path that Console Secrets creates.
+This document outlines how to manage environment variables in AWS Amplify for the Puerto Rico Logistics Map application. All API keys and configuration will be handled through standard AWS Amplify environment variables.
 
 ## Setup Instructions
 
-### 1. Manual SSM Parameter Creation (✅ Working Solution)
+### 1. AWS Amplify Console Setup
 
-**App Configuration:**
-- App ID: `dawq158evhzhz`
-- Current Branch: `main-convex-refactor`
-- Production Branch: `main`
+1. Navigate to your Amplify app in AWS Console
+2. Go to **Hosting** → **Environment variables**
+3. Add the following environment variables:
 
-**Critical**: Create SSM parameters at exact paths that Amplify expects:
+#### Required Variables
+- **PPLX**: `your_perplexity_api_key`
+  - Perplexity API key for chat functionality
 
-```bash
-# For current branch (main-convex-refactor):
-aws ssm put-parameter \
-  --name "/amplify/dawq158evhzhz/main-convex-refactor/PPLX" \
-  --value "your_perplexity_api_key" \
-  --type "SecureString" \
-  --overwrite
+#### Optional Variables
+- **NEXT_PUBLIC_GOOGLE_MAPS_API_KEY**: `your_google_maps_api_key`
+  - Google Maps API key for map rendering
+- **CONVEX_DEPLOYMENT**: `your_convex_deployment_id`
+- **CONVEX_DEPLOY_KEY**: `your_convex_deploy_key`
+- **CONVEX_URL**: `your_convex_url`
+- **NEXT_PUBLIC_CONVEX_URL**: `your_public_convex_url`
 
-# For production branch (main):
-aws ssm put-parameter \
-  --name "/amplify/dawq158evhzhz/main/PPLX" \
-  --value "your_perplexity_api_key" \
-  --type "SecureString" \
-  --overwrite
+### 2. Build Specification
+
+The `amplify.yml` is simplified:
+
+```yaml
+version: 1
+applications:
+  - frontend:
+      phases:
+        preBuild:
+          commands:
+            - corepack enable pnpm
+            - pnpm install --frozen-lockfile
+        build:
+          commands:
+            - pnpm run build
+      artifacts:
+        baseDirectory: .next
+        files:
+          - '**/*'
+      cache:
+        paths:
+          - .pnpm-store/**
 ```
-
-**Quick Setup**: Use the provided scripts:
-- `scripts/setup-ssm-secrets.sh` (Linux/Mac)
-- `scripts/setup-ssm-secrets.bat` (Windows)
-- `scripts/SSM_COMMANDS.md` (Copy-paste commands)
-
-### 2. Build Specification Configuration
-
-The `amplify.yml` has been enhanced to implement the forum solution for parsing Amplify's `secrets` JSON environment variable:
-
-**How it works:**
-1. Amplify fetches SSM parameters from `/amplify/{app-id}/{branch}/` and provides them as a single JSON variable called `secrets`
-2. Our enhanced `amplify.yml` parses this JSON to extract individual secrets
-3. Individual secrets are exported as environment variables and written to `.env.production`
-
-**Key features implemented:**
-- ✅ Robust JSON parsing with error handling
-- ✅ Comprehensive debug logging
-- ✅ Validation for critical secrets (PPLX)
-- ✅ Length validation and status reporting
-- ✅ Fallback messaging when secrets are missing
-
-**Current amplify.yml structure:**
-- Parses: `PPLX`, `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY`, and optional Convex secrets
-- Validates critical secrets before build
-- Provides detailed logging for debugging
-- Writes environment files for SSR runtime access
 
 ### 3. Local Development
 
-For local development, use Amplify's sandbox secrets:
+For local development, create a `.env.local` file:
 
-```bash
-# Set secret in local sandbox
-npx ampx sandbox secret set PPLX
-# You'll be prompted to enter your API key securely
-```
-
-**Alternative**: If you need to use `.env.local` for local development:
 ```bash
 # Server-side variables (never exposed to browser)
 PPLX=your_local_perplexity_api_key
+NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=your_google_maps_api_key
+
+# Optional: Convex variables if using
+CONVEX_DEPLOYMENT=your_convex_deployment_id
+CONVEX_URL=your_convex_url
+NEXT_PUBLIC_CONVEX_URL=your_public_convex_url
 ```
 
 **Important**: Never commit the actual `.env.local` file to version control.
 
 ## Security Best Practices
 
-1. **Never store secrets in environment variables long-term** - Use AWS Secrets Manager for production
+1. **Use environment variables for configuration** - Simple and straightforward
 2. **Use least privilege access** - Ensure your Amplify app has minimal required permissions
 3. **Rotate API keys regularly** - Update both local and Amplify console values
 4. **Monitor usage** - Track API usage to detect unauthorized access
 
 ## Code Implementation
 
-Follow this flow whenever a server route needs an AWS Amplify secret:
-
-1. Resolve the value with `secret("<KEY>")` from `@aws-amplify/backend`.
-2. Validate the resolved value is a non-empty string of the expected length.
-3. Optionally fall back to `process.env` so local `.env` development continues to work.
-4. Bubble up meaningful HTTP errors when the secret is missing or malformed before calling external services.
+API routes simply use `process.env` to access environment variables:
 
 ```typescript
 import { NextResponse } from "next/server";
-import { secret } from "@aws-amplify/backend";
 
-const pplxSecret = secret("PPLX");
 const MIN_PPLX_KEY_LENGTH = 10;
-
-type ApiKeyResolution =
-  | { status: "resolved"; apiKey: string; source: "secret" | "env" }
-  | { status: "invalid"; source: "secret" | "env"; length: number }
-  | { status: "missing" };
-
-const resolvePplxApiKey = (): ApiKeyResolution => {
-  const secretRaw = pplxSecret as unknown;
-  const secretCandidate = typeof secretRaw === "string" ? secretRaw.trim() : undefined;
-
-  if (secretRaw && typeof secretRaw !== "string") {
-    console.warn("PPLX secret returned non-string value from secret(\"PPLX\") - falling back to process.env");
-  }
-
-  if (secretCandidate) {
-    if (secretCandidate.length >= MIN_PPLX_KEY_LENGTH) {
-      return { status: "resolved", apiKey: secretCandidate, source: "secret" };
-    }
-    return { status: "invalid", source: "secret", length: secretCandidate.length };
-  }
-
-  const envCandidate = process.env.PPLX?.trim();
-
-  if (envCandidate) {
-    if (envCandidate.length >= MIN_PPLX_KEY_LENGTH) {
-      return { status: "resolved", apiKey: envCandidate, source: "env" };
-    }
-    return { status: "invalid", source: "env", length: envCandidate.length };
-  }
-
-  return { status: "missing" };
-};
 
 export async function POST(req: Request) {
   try {
-    const resolvedApiKey = resolvePplxApiKey();
+    const apiKey = process.env.PPLX?.trim();
 
-    if (resolvedApiKey.status === "missing") {
+    if (!apiKey) {
       return NextResponse.json(
         {
           error: "API configuration error",
-          message: "Chat service is not properly configured (missing PPLX secret)"
+          message: "Chat service is not properly configured (missing PPLX environment variable)"
         },
         { status: 500 }
       );
     }
 
-    if (resolvedApiKey.status === "invalid") {
+    if (apiKey.length < MIN_PPLX_KEY_LENGTH) {
       return NextResponse.json(
         {
           error: "API configuration error",
-          message: "Chat service configuration is invalid (PPLX secret is malformed)",
-          detail: `Resolved from ${resolvedApiKey.source} with length ${resolvedApiKey.length}`
+          message: "Chat service configuration is invalid (PPLX key is malformed)"
         },
         { status: 500 }
       );
     }
-
-    const { apiKey } = resolvedApiKey;
 
     const { messages } = (await req.json()) as {
       messages: { role: "system" | "user" | "assistant"; content: string }[];
@@ -222,63 +157,43 @@ export async function POST(req: Request) {
 ### Common Issues
 
 1. **"Missing PPLX API key" error**
-   - ❌ **DO NOT** use Amplify Console Secrets - they create wrong paths
-   - ✅ Verify SSM parameters exist at exact path: `/amplify/dawq158evhzhz/{branch}/PPLX`
-   - ✅ Check build logs for "secrets env var present: YES"
-   - ✅ Look for "Parsed PPLX length: X" in build logs
+   - Verify the environment variable is set in Amplify Console under **Hosting** → **Environment variables**
+   - Ensure the variable name is exactly `PPLX` (case-sensitive)
+   - Check that the value is not empty
 
-2. **Empty `secrets` environment variable**
-   - ❌ Most likely using wrong SSM paths (branch hash suffixes)
-   - ✅ Recreate SSM parameters at exact paths: `/amplify/dawq158evhzhz/{branch}/`
-   - ✅ Verify app ID and branch name are correct
-   - ✅ Check AWS region matches your Amplify app
+2. **Environment variables not available**
+   - Confirm variables are set in the correct branch
+   - Redeploy your Amplify app after adding environment variables
+   - Check build logs for any environment variable errors
 
-3. **Secrets not parsed correctly**
-   - Check build logs for JSON parsing errors
-   - Verify SSM parameter values don't contain invalid JSON characters
-   - Ensure parameter type is "SecureString"
-
-4. **Local development issues**
-   - Use `npx ampx sandbox secret set PPLX` for local secrets
-   - Alternatively, ensure `.env.local` exists and contains the PPLX variable
-   - Restart your development server after adding secrets/environment variables
+3. **Local development issues**
+   - Ensure `.env.local` exists and contains the required variables
+   - Restart your development server after adding environment variables
+   - Verify variable names match exactly between local and Amplify
 
 ### Debugging Steps
 
-1. **Check build logs** for secrets parsing:
-   ```
-   === AWS Amplify Secrets Parsing ===
-   secrets env var present: YES
-   secrets JSON length: 156
-   Found secrets JSON, parsing individual secrets...
-   Parsed PPLX length: 45
-   ```
+1. **Check Amplify Console**:
+   - Go to **Hosting** → **Environment variables**
+   - Verify all required variables are set
+   - Check the correct branch is selected
 
-2. **Verify SSM parameters** exist at correct paths:
+2. **Verify local environment**:
    ```bash
-   aws ssm get-parameters-by-path --path "/amplify/dawq158evhzhz/main-convex-refactor" --recursive
+   # Check if .env.local exists and has correct variables
+   cat .env.local
    ```
 
-3. **Test individual parameter** access:
-   ```bash
-   aws ssm get-parameter --name "/amplify/dawq158evhzhz/main-convex-refactor/PPLX" --with-decryption
-   ```
-
-4. **Verify runtime access** in API routes:
+3. **Test API routes**:
    ```typescript
-   console.log("PPLX secret exists:", !!secret("PPLX"));
+   console.log("PPLX exists:", !!process.env.PPLX);
    ```
 
 ## Related Files
 
 ### Core Implementation
-- `amplify.yml` - Enhanced build specification with secrets JSON parsing
-- `app/api/chat/route.ts` - API route that uses the PPLX key with `secret()` function
-
-### Setup Scripts
-- `scripts/setup-ssm-secrets.sh` - Interactive SSM parameter setup (Linux/Mac)
-- `scripts/setup-ssm-secrets.bat` - Command reference for Windows
-- `scripts/SSM_COMMANDS.md` - Copy-paste AWS CLI commands
+- `amplify.yml` - Simple build specification
+- `app/api/chat/route.ts` - API route that uses environment variables
 
 ### Configuration
 - `.env.local` - Local development environment
@@ -293,14 +208,11 @@ export async function POST(req: Request) {
 ## References
 
 - [AWS Amplify Environment Variables](https://docs.aws.amazon.com/amplify/latest/userguide/environment-variables.html)
-- [AWS Systems Manager Parameter Store](https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-parameter-store.html)
 - [Next.js Environment Variables](https://nextjs.org/docs/basic-features/environment-variables)
-- [AWS Secrets Manager](https://docs.aws.amazon.com/secretsmanager/)
-- [Forum Solution Reference](https://forums.aws.amazon.com/) - Manual SSM parameter discovery
 
 ## Summary
 
-The **key insight** from the forum solution is that Amplify Console Secrets create SSM parameters with branch hash suffixes that Amplify's auto-injection ignores. **Manual SSM parameters at exact paths** `/amplify/{app-id}/{branch}/SECRET_NAME` are required for the `secrets` JSON environment variable to be populated correctly.
+Use standard AWS Amplify environment variables for all API keys and configuration. Set them in the Amplify Console under **Hosting** → **Environment variables** and access them via `process.env` in your code.
 
 
 
