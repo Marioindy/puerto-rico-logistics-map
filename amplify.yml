@@ -10,7 +10,7 @@ applications:
           commands:
             # Set environment variables for build
             - export NEXT_PUBLIC_SITE_URL="https://$AWS_BRANCH.$AWS_APP_ID.amplifyapp.com"
-            - export NEXT_PUBLIC_CONVEX_URL=""
+            - export NEXT_PUBLIC_CONVEX_URL="https://earnest-cormorant-477.convex.cloud"
             - pnpm run build
       artifacts:
         baseDirectory: .next
