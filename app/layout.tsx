@@ -32,7 +32,7 @@ export const metadata: Metadata = {
   },
   description:
     "Operational dashboard scaffolding for Puerto Rico logistics coordination across agencies and partners.",
-  metadataBase: new URL("https://puerto-rico-logistics-grid.local")
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://localhost:3000")
 };
 
 // Root layout component - wraps all pages with consistent structure
