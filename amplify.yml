@@ -8,6 +8,7 @@ applications:
             - pnpm install --frozen-lockfile
             - echo "CONVEX_DEPLOYMENT=$CONVEX_DEPLOYMENT" >> .env.production
             - echo "CONVEX_URL=$CONVEX_URL" >> .env.production
+            - echo "CONVEX_DEPLOY_KEY=$CONVEX_DEPLOY_KEY" >> .env.production
             - echo "PPLX=$PPLX" >> .env.production
         build:
           commands:

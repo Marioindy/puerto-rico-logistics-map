@@ -14,7 +14,11 @@
       "WebFetch(domain:docs.amplify.aws)",
       "WebFetch(domain:docs.perplexity.ai)",
       "Bash(npm install:*)",
-      "Bash(npm:*)"
+      "Bash(npm:*)",
+      "Bash(npx convex env:*)",
+      "Bash(npx convex:*)",
+      "Read(//c/Users/Jesie/.convex/**)",
+      "Bash(echo $CONVEX_DEPLOYMENT)"
     ],
     "deny": [],
     "ask": []
