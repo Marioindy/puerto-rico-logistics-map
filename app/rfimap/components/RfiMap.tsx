@@ -1,18 +1,6 @@
 // components/RfiMap.tsx
 "use client";
-
-import { useEffect, useRef } from "react";
-
-export type MarkerData = {
-  id: string;
-  name: string;
-  position: { lat: number; lng: number };
-  category?: string;
-  address?: string;
-  phone?: string;
-  website?: string;
-  description?: string;
-  tags?: string[];
+\
 };
 
 type GoogleMapsNamespace = typeof google.maps;
