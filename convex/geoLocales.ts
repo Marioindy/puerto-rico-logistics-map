@@ -143,7 +143,7 @@ export const listWithDetails = query({
 
         return {
           id: geoLocale._id,
-          type: geoLocale.type,
+          type: geoLocale.type as 'airport' | 'port' | 'warehouse' | 'facility',
           coordinates: geoLocale.coordinates,
           data: {
             title: geoLocale.name,
@@ -215,7 +215,7 @@ export const getByIdWithDetails = query({
 
     return {
       id: geoLocale._id,
-      type: geoLocale.type,
+      type: geoLocale.type as 'airport' | 'port' | 'warehouse' | 'facility',
       coordinates: geoLocale.coordinates,
       data: {
         title: geoLocale.name,
