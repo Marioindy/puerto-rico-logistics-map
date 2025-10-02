@@ -1,7 +1,8 @@
 // convex/geoLocales.ts
-import { query } from "./_generated/server";
+import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
-import type { QueryCtx } from "./_generated/server";
+import { ConvexError } from "convex/values";
+import type { QueryCtx, MutationCtx } from "./_generated/server";
 import type { Doc } from "./_generated/dataModel";
 
 /**
@@ -223,5 +224,118 @@ export const getByIdWithDetails = query({
         boxes: boxesWithVariables,
       },
     };
+  },
+});
+
+/**
+ * Helper: Validate admin access
+ */
+function validateAdminKey(adminKey: string) {
+  const secretKey = process.env.ADMIN_SECRET_KEY;
+
+  if (!secretKey) {
+    throw new ConvexError("Admin functionality not configured");
+  }
+
+  if (adminKey !== secretKey) {
+    throw new ConvexError("Unauthorized access");
+  }
+}
+
+/**
+ * Admin Mutation: Create a new geoLocale
+ * Requires ADMIN_SECRET_KEY environment variable
+ */
+export const adminCreate = mutation({
+  args: {
+    adminKey: v.string(),
+    name: v.string(),
+    type: v.string(),
+    coordinates: v.object({
+      lat: v.number(),
+      lng: v.number(),
+    }),
+    description: v.string(),
+    region: v.string(),
+    isActive: v.boolean(),
+  },
+  handler: async (ctx, args) => {
+    validateAdminKey(args.adminKey);
+
+    const { adminKey, ...data } = args;
+
+    return await ctx.db.insert("geoLocales", data);
+  },
+});
+
+/**
+ * Admin Mutation: Update an existing geoLocale
+ * Requires ADMIN_SECRET_KEY environment variable
+ */
+export const adminUpdate = mutation({
+  args: {
+    adminKey: v.string(),
+    id: v.id("geoLocales"),
+    name: v.optional(v.string()),
+    type: v.optional(v.string()),
+    coordinates: v.optional(v.object({
+      lat: v.number(),
+      lng: v.number(),
+    })),
+    description: v.optional(v.string()),
+    region: v.optional(v.string()),
+    isActive: v.optional(v.boolean()),
+  },
+  handler: async (ctx, args) => {
+    validateAdminKey(args.adminKey);
+
+    const { adminKey, id, ...updates } = args;
+
+    // Remove undefined fields
+    const cleanUpdates = Object.fromEntries(
+      Object.entries(updates).filter(([_, value]) => value !== undefined)
+    );
+
+    await ctx.db.patch(id, cleanUpdates);
+    return id;
+  },
+});
+
+/**
+ * Admin Mutation: Delete a geoLocale
+ * Requires ADMIN_SECRET_KEY environment variable
+ * WARNING: This will cascade delete all associated facilityBoxes and facilityVariables
+ */
+export const adminDelete = mutation({
+  args: {
+    adminKey: v.string(),
+    id: v.id("geoLocales"),
+  },
+  handler: async (ctx, args) => {
+    validateAdminKey(args.adminKey);
+
+    // Get all boxes for this geoLocale
+    const boxes = await ctx.db
+      .query("facilityBoxes")
+      .withIndex("by_geoLocaleId", (q) => q.eq("geoLocaleId", args.id))
+      .collect();
+
+    // Delete all variables for each box
+    for (const box of boxes) {
+      const variables = await ctx.db
+        .query("facilityVariables")
+        .withIndex("by_boxId", (q) => q.eq("boxId", box._id))
+        .collect();
+
+      for (const variable of variables) {
+        await ctx.db.delete(variable._id);
+      }
+
+      await ctx.db.delete(box._id);
+    }
+
+    // Delete the geoLocale
+    await ctx.db.delete(args.id);
+    return args.id;
   },
 });

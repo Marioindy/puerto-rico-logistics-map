@@ -25,6 +25,10 @@
   - **Local dev**: Add to `.env.local`
   - **Code**: Access with `process.env.PPLX`, return descriptive 500 if missing or malformed.
 - `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY`: client map key (used in `MapView` and `InteractiveMap`).
+- `ADMIN_SECRET_KEY`: server-only admin key for protected Convex mutations.
+  - **Production**: Set in Convex dashboard (Settings -> Environment Variables)
+  - **Local dev**: Add to `.env.local`
+  - **Security**: This key protects all admin mutations (create, update, delete) for geoLocales, facilityBoxes, and facilityVariables.
 - Optional placeholders: `CONVEX_DEPLOYMENT`, `AMPLIFY_ENV`.
 
 ## AWS Amplify Configuration
@@ -70,6 +74,10 @@ geoLocales (locations)
   - `listWithDetails()` - Locations WITH boxes WITH variables (for FacilityInfoPanel)
   - `getById()` - Single location
   - `getByIdWithDetails()` - Single location with full details
+- **Admin Mutations**: `convex/geoLocales.ts` (requires `ADMIN_SECRET_KEY`)
+  - `adminCreate()` - Create new location
+  - `adminUpdate()` - Update existing location
+  - `adminDelete()` - Delete location (cascades to boxes and variables)
 
 #### 2. `facilityBoxes` (UI organization)
 - **Fields**: geoLocaleId (ref to geoLocales), title, icon, color, sortOrder
@@ -78,6 +86,13 @@ geoLocales (locations)
 - **Color Options**: blue, green, orange, purple, red, gray, cyan, indigo
 - **Purpose**: Groups facility information into visual boxes/sections for FacilityInfoPanel display
 - **Display**: Each box appears as an expandable section with icon and color coding
+- **Queries**: `convex/facilityBoxes.ts`
+  - `getByGeoLocaleId()` - Get all boxes for a location
+  - `getById()` - Single box
+- **Admin Mutations**: `convex/facilityBoxes.ts` (requires `ADMIN_SECRET_KEY`)
+  - `adminCreate()` - Create new box
+  - `adminUpdate()` - Update existing box
+  - `adminDelete()` - Delete box (cascades to variables)
 
 #### 3. `facilityVariables` (dynamic facility metadata)
 - **Fields**: boxId (ref to facilityBoxes), key, label, type, value (optional), sortOrder, parentVariableId (optional, self-referencing), unit, unitCategory
@@ -86,6 +101,14 @@ geoLocales (locations)
 - **Unit Categories**: distance, area, time, capacity, volume, power, percentage
 - **Purpose**: Stores flexible, dynamic facility attributes (capacity, operating hours, dock doors, etc.)
 - **Nested Support**: Variables can have subVariables for hierarchical organization
+- **Queries**: `convex/facilityVariables.ts`
+  - `getByBoxId()` - Get all variables for a box
+  - `getById()` - Single variable
+  - `getByKey()` - Find variables by key
+- **Admin Mutations**: `convex/facilityVariables.ts` (requires `ADMIN_SECRET_KEY`)
+  - `adminCreate()` - Create new variable (with validation)
+  - `adminUpdate()` - Update existing variable (prevents self-referencing)
+  - `adminDelete()` - Delete variable (cascades to child variables)
 
 #### 4. `shipments` (cargo tracking)
 - **Fields**: reference, createdByEmail, originGeoId (ref), destinationGeoId (ref), mode, status, etd, eta, atd (optional), ata (optional), trackingNumber (optional), bl (optional), awb (optional), weightKg (optional), volumeM3 (optional), pieces (optional), hazmat (optional), notes (optional)
@@ -106,6 +129,36 @@ geoLocales (locations)
 - **Manual dashboard edits**: Data added via Convex dashboard must match the schema, or validation errors occur
 - **Type generation**: Running `npx convex dev` regenerates TypeScript types in `convex/_generated/`
 - **Schema updates**: When schema changes, Convex validates all existing documents against new schema
+
+### Admin Mutations Usage
+All admin mutations require the `ADMIN_SECRET_KEY` environment variable. Example usage:
+
+```typescript
+// From client code (not recommended - exposes key)
+await api.geoLocales.adminCreate({
+  adminKey: "your-secret-key-here",
+  name: "New Warehouse",
+  type: "warehouse",
+  coordinates: { lat: 18.4, lng: -66.0 },
+  description: "A new warehouse facility",
+  region: "north",
+  isActive: true,
+});
+
+// Better: From server-side actions or scripts
+import { api } from "../convex/_generated/api";
+const result = await ctx.runMutation(api.geoLocales.adminCreate, {
+  adminKey: process.env.ADMIN_SECRET_KEY!,
+  // ... other fields
+});
+```
+
+**Security Notes**:
+- Never expose `ADMIN_SECRET_KEY` in client-side code
+- Set `ADMIN_SECRET_KEY` in Convex dashboard for production
+- All mutations validate the key before executing
+- Failed authentication throws `ConvexError("Unauthorized access")`
+- Missing key configuration throws `ConvexError("Admin functionality not configured")`
 
 ## Editing & Build Hygiene
 - Avoid literal escape sequences (`\n`, `` `r`n ``); write real newlines.

@@ -72,6 +72,7 @@ If a page has no unique components yet, leave the `components/` folder empty but
 - Env keys:
   - `PPLX` (server-only secret)
   - `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` (client)
+  - `ADMIN_SECRET_KEY` (server-only, protects Convex admin mutations)
 - To test without the service, stub `/api/chat` to return a canned payload.
 
 ## Convex Backend
@@ -95,18 +96,37 @@ geoLocales → facilityBoxes → facilityVariables
      - `list()` - filtered location list
      - `listWithDetails()` - locations WITH boxes WITH variables (for UI panel)
      - `getById()` / `getByIdWithDetails()` - single location lookups
+   - Admin mutations in `convex/geoLocales.ts` (require `ADMIN_SECRET_KEY`):
+     - `adminCreate()` - create location
+     - `adminUpdate()` - update location
+     - `adminDelete()` - delete location (cascades to boxes and variables)
 
 2. **facilityBoxes**: UI organization containers
    - Fields: geoLocaleId (ref), title, icon, color, sortOrder
    - Links to geoLocales, defines visual grouping with icons/colors for FacilityInfoPanel
    - Icons: Info, Settings, Eye, MapPin, Database, Monitor
    - Colors: blue, green, orange, purple, red, gray, cyan, indigo
+   - Queries in `convex/facilityBoxes.ts`:
+     - `getByGeoLocaleId()` - boxes for a location
+     - `getById()` - single box
+   - Admin mutations in `convex/facilityBoxes.ts` (require `ADMIN_SECRET_KEY`):
+     - `adminCreate()` - create box
+     - `adminUpdate()` - update box
+     - `adminDelete()` - delete box (cascades to variables)
 
 3. **facilityVariables**: Dynamic facility metadata
    - Fields: boxId (ref), key, label, type, value (optional), sortOrder, parentVariableId (optional), unit, unitCategory
    - Types: text, email, number, coordinates, nested
    - Supports nested variables (parent-child relationships) for hierarchical data
    - Flexible key-value storage for facility attributes (capacity, hours, etc.)
+   - Queries in `convex/facilityVariables.ts`:
+     - `getByBoxId()` - variables for a box
+     - `getById()` - single variable
+     - `getByKey()` - find by key
+   - Admin mutations in `convex/facilityVariables.ts` (require `ADMIN_SECRET_KEY`):
+     - `adminCreate()` - create variable (validates type, parent)
+     - `adminUpdate()` - update variable (prevents self-referencing)
+     - `adminDelete()` - delete variable (cascades to children)
 
 4. **shipments**: Cargo tracking
    - Fields: reference, createdByEmail, originGeoId (ref), destinationGeoId (ref), mode, status, timestamps, tracking details, cargo specs
@@ -119,6 +139,16 @@ geoLocales → facilityBoxes → facilityVariables
 - Convex validates existing data against new schema
 - Types auto-generate in `convex/_generated/`
 - Dashboard edits must match schema or validation fails
+
+### Admin Mutations Security
+- All admin mutations (create, update, delete) require `ADMIN_SECRET_KEY` environment variable
+- Set in Convex dashboard (Settings → Environment Variables) for production
+- Set in `.env.local` for local development
+- Key is validated before any mutation executes
+- Unauthorized access throws `ConvexError("Unauthorized access")`
+- Missing configuration throws `ConvexError("Admin functionality not configured")`
+- Never expose `ADMIN_SECRET_KEY` in client-side code
+- All mutations include validation logic (foreign keys, data integrity, cascade deletes)
 
 ### RFI Survey Data
 - **Source**: `docs/RFI MAP/RFI Responses (NEW 69 Responses).xlsx`
