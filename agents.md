@@ -37,11 +37,19 @@ If a page has no unique components yet, leave the `components/` folder empty but
 - `components/`: shared widgets used by multiple pages (`Header`, `ChatbotFab`, `InteractiveMap`, etc.).
 - `lib/`: shared utilities
   - `env/`: Zod schemas + validation for environment variables
-  - `content/`: Zod schemas + loader for landing content
+  - `content/`: Zod schemas + loaders for content and RFI data
+    - `schema.ts`: Zod schemas including `RfiLocationSchema`
+    - `loaders.ts`: Content loaders including `getRfiLocations()`
+    - `rfi-locations.json`: Extracted RFI survey data with valid GPS coordinates
   - `facilityData.ts`: RFI markers and helpers
 - `content/`: content-as-code (currently `home.ts`)
 - `types/`: shared TypeScript types (`content`, `facilities`, etc.)
 - `styles/`: Tailwind/global CSS
+- `convex/`: Convex backend functions and schema
+  - `schema.ts`: Database schema definition (source of truth)
+  - `facilities.ts`: Facility queries and mutations
+  - `functions/`: Organized function modules
+  - `_generated/`: Auto-generated TypeScript types (do not edit)
 
 ## Zod Validation (Runtime + Types)
 - Content schema: `lib/content/schema.ts`
@@ -66,10 +74,63 @@ If a page has no unique components yet, leave the `components/` folder empty but
   - `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` (client)
 - To test without the service, stub `/api/chat` to return a canned payload.
 
+## Convex Backend
+- **Schema File**: `convex/schema.ts` (source of truth for database structure)
+- **Development**: `npx convex dev` (watches for changes, pushes schema, regenerates types)
+- **Deployment**: `npx convex deploy`
+
+### Database Tables
+All Convex tables automatically include `_id` and `_creationTime` fields.
+
+**Architecture**: Three-table hierarchy for flexible facility data:
+```
+geoLocales → facilityBoxes → facilityVariables
+```
+
+1. **geoLocales**: Main facilities/locations (warehouses, ports, airports, facilities)
+   - Fields: name, type, coordinates {lat, lng}, description, region, isActive
+   - Indexes: by_name, by_type, by_region, by_isActive
+   - Primary table for map display
+   - Queries in `convex/geoLocales.ts`:
+     - `list()` - filtered location list
+     - `listWithDetails()` - locations WITH boxes WITH variables (for UI panel)
+     - `getById()` / `getByIdWithDetails()` - single location lookups
+
+2. **facilityBoxes**: UI organization containers
+   - Fields: geoLocaleId (ref), title, icon, color, sortOrder
+   - Links to geoLocales, defines visual grouping with icons/colors for FacilityInfoPanel
+   - Icons: Info, Settings, Eye, MapPin, Database, Monitor
+   - Colors: blue, green, orange, purple, red, gray, cyan, indigo
+
+3. **facilityVariables**: Dynamic facility metadata
+   - Fields: boxId (ref), key, label, type, value (optional), sortOrder, parentVariableId (optional), unit, unitCategory
+   - Types: text, email, number, coordinates, nested
+   - Supports nested variables (parent-child relationships) for hierarchical data
+   - Flexible key-value storage for facility attributes (capacity, hours, etc.)
+
+4. **shipments**: Cargo tracking
+   - Fields: reference, createdByEmail, originGeoId (ref), destinationGeoId (ref), mode, status, timestamps, tracking details, cargo specs
+   - Indexes: by_reference, by_status, by_originGeoId, by_destinationGeoId
+   - Full logistics data: origin/destination, modes, status, weights, tracking numbers
+
+### Schema Workflow
+- Edit `convex/schema.ts` locally
+- Run `npx convex dev` to push changes
+- Convex validates existing data against new schema
+- Types auto-generate in `convex/_generated/`
+- Dashboard edits must match schema or validation fails
+
+### RFI Survey Data
+- **Source**: `docs/RFI MAP/RFI Responses (NEW 69 Responses).xlsx`
+- **Extracted**: 4 facilities with valid coordinates → `lib/content/rfi-locations.json`
+- **Schema**: `RfiLocationSchema` validates GPS coordinates within PR bounds
+- **Access**: Use `getRfiLocations()` from `lib/content/loaders.ts`
+
 ## Contribution Checklist
 - Respect page structure (see Page Creation Protocol).
 - Add/update Zod schemas when introducing new content or env requirements.
 - Keep shared types in sync with schemas (prefer `z.infer`).
+- When modifying Convex schema, run `npx convex dev` to validate and regenerate types.
 - Update docs (`README.md`, `agents.md`, `Claude.md`) whenever architecture or conventions change.
 
 

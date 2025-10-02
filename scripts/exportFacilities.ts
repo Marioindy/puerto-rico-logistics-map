@@ -1,4 +1,13 @@
 // scripts/exportFacilities.ts
+// DEPRECATED: This script was designed for the old facilities table architecture.
+// The new architecture uses: geoLocales → facilityBoxes → facilityVariables
+// Data should now be managed directly in Convex dashboard or via mutations.
+//
+// To migrate data to the new structure, manually create entries in Convex dashboard:
+// 1. Create geoLocale entries (locations with coordinates)
+// 2. Create facilityBoxes entries (UI sections linked to geoLocales)
+// 3. Create facilityVariables entries (attributes within boxes)
+
 import fs from "node:fs";
 import path from "node:path";
 import { facilityDatabase } from "../lib/facilityData";
