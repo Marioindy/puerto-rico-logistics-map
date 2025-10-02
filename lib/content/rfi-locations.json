@@ -1,0 +1,98 @@
+[
+  {
+    "id": 4,
+    "name": "United Parcel Service (UPS)",
+    "facilityName": "UPS",
+    "type": "Agente de carga / Freight Forwarder;Almacén / Centro de distribución;Transportista terrestre;Courier;Operador aéreo ;Operador aeroportuario;Integrador logístico;Operador de rampa / Ground handler;",
+    "address": "18.4378041, -65.9916765",
+    "coordinates": {
+      "lat": 18.4378041,
+      "lng": -65.9916765
+    },
+    "contact": {
+      "position": "Gerente General",
+      "email": "joramas@ups.com",
+      "phone": "787-458-1664"
+    },
+    "storage": true,
+    "storageType": "Hub o punto de consolidación",
+    "area": "40K ft2",
+    "services": "Manejo de carga aérea;Cross-docking;Almacenaje refrigerado;Manejo mercancías peligrosas;Tránsito aduanal;",
+    "transportModes": "Intermodal",
+    "cargoTypes": "Refrigerada;E-commerce;Farmacéutica;Peligrosa;",
+    "certifications": "TSA;",
+    "operatingHours": "7:00am 11:30pm"
+  },
+  {
+    "id": 5,
+    "name": "American Storage & Distribution",
+    "facilityName": "American Storage & Distribution",
+    "type": "Proveedor logístico (3PL, 4PL, etc.);",
+    "address": "18.428536462420475, -66.15098102934986",
+    "coordinates": {
+      "lat": 18.428536462420475,
+      "lng": -66.15098102934986
+    },
+    "contact": {
+      "position": "presidente",
+      "email": "jp@americanstoragepr.com",
+      "phone": "787.788.5690"
+    },
+    "storage": true,
+    "storageType": "Almacén dentro de planta (in situ)",
+    "area": "110,000 ft2",
+    "services": "Consolidación/desconsolidación;Cross-docking;Manejo mercancías peligrosas;Rastreo/trazabilidad;",
+    "transportModes": "Intermodal",
+    "cargoTypes": "General;Perecedera;Peligrosa;",
+    "certifications": "ISO;",
+    "operatingHours": "lunes a viernes 8am-5pm"
+  },
+  {
+    "id": 28,
+    "name": "Allied Logistics Corp.",
+    "facilityName": "Allied Logistics Corp.",
+    "type": "Proveedor logístico (3PL, 4PL, etc.);Agente de carga / Freight Forwarder;Almacén / Centro de distribución;Transportista terrestre;Zona franca / Parque logístico;Soluciones tecnológicas de logística;Integrador logístico;",
+    "address": "18.29278,-66.04660",
+    "coordinates": {
+      "lat": 18.29278,
+      "lng": -66.0466
+    },
+    "contact": {
+      "position": "Chief Financial Officer",
+      "email": "denisserivera@alliedpr.com",
+      "phone": "787-525-1774"
+    },
+    "storage": true,
+    "storageType": "Centro de distribución externo",
+    "area": "193,304 sq.ft or 17,948.66 m2",
+    "services": "Consolidación/desconsolidación;Manejo de carga aérea;Cross-docking;Almacenaje refrigerado;Manejo mercancías peligrosas;Tránsito aduanal;",
+    "transportModes": "Terrestre",
+    "cargoTypes": "General;",
+    "certifications": "TSA;CTPAT, Bonded Carrier, Minority Supplier, FDA Register, Licencia de Droguería y OTC, NVOCC;",
+    "operatingHours": "24 horas"
+  },
+  {
+    "id": 30,
+    "name": "Allied Logistics Corp.",
+    "facilityName": "Caguas 4",
+    "type": "Proveedor logístico (3PL, 4PL, etc.);Agente de carga / Freight Forwarder;Almacén / Centro de distribución;Transportista terrestre;Integrador logístico;Zona franca / Parque logístico;Soluciones tecnológicas de logística;",
+    "address": "18.25277,-66.03352",
+    "coordinates": {
+      "lat": 18.25277,
+      "lng": -66.03352
+    },
+    "contact": {
+      "position": "Chief Financial Officer",
+      "email": "denisserivera@alliedpr.com",
+      "phone": "787-525-1774"
+    },
+    "storage": true,
+    "storageType": "Centro de distribución externo",
+    "area": "122,000 sq. ft ó 41,603 m2",
+    "services": "Consolidación/desconsolidación;Manejo de carga aérea;Almacenaje refrigerado;Rastreo/trazabilidad;Cross-docking;",
+    "transportModes": "Terrestre",
+    "cargoTypes": "General;",
+    "certifications": "TSA;CTPAT, NVOCC, Hazmat, Bond Carrier, Minority Supplier, Twic;",
+    "operatingHours": "6:00 a.m. - 8:00 p.m. de Lunes a Viernes"
+  }
+]

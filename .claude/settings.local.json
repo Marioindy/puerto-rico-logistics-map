@@ -22,7 +22,11 @@
       "Bash(git checkout:*)",
       "Bash(cd:*)",
       "Bash(pnpm run:*)",
-      "Read(//c/Users/Jesie/**)"
+      "Read(//c/Users/Jesie/**)",
+      "Bash(git log:*)",
+      "Bash(pnpm list:*)",
+      "Bash(pnpm add:*)",
+      "Bash(node:*)"
     ],
     "deny": [],
     "ask": []

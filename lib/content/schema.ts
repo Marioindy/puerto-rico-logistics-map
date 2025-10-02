@@ -168,3 +168,38 @@ export type MapFilterStateZ = z.infer<typeof MapFilterStateSchema>;
 export type FacilitiesDatabaseZ = z.infer<typeof FacilitiesDatabaseSchema>;
 export type MapMarkersZ = z.infer<typeof MapMarkersSchema>;
 export type FacilitySummaryZ = z.infer<typeof FacilitySummarySchema>;
+
+/** RFI location contact schema */
+export const RfiContactSchema = z.object({
+  name: z.string().optional(),
+  position: z.string().optional(),
+  email: z.string().email().optional(),
+  phone: z.string().optional()
+});
+
+/** RFI location schema from survey responses */
+export const RfiLocationSchema = z.object({
+  id: z.number().int().positive(),
+  name: z.string().min(1),
+  facilityName: z.string().optional(),
+  type: z.string().min(1),
+  address: z.string().min(1),
+  coordinates: CoordinatesSchema,
+  contact: RfiContactSchema.optional(),
+  storage: z.boolean().optional(),
+  storageType: z.string().optional(),
+  area: z.string().optional(),
+  services: z.string().optional(),
+  transportModes: z.string().optional(),
+  cargoTypes: z.string().optional(),
+  certifications: z.string().optional(),
+  operatingHours: z.string().optional()
+});
+
+/** Array of RFI locations */
+export const RfiLocationsSchema = z.array(RfiLocationSchema);
+
+// Inferred TypeScript types
+export type RfiContactZ = z.infer<typeof RfiContactSchema>;
+export type RfiLocationZ = z.infer<typeof RfiLocationSchema>;
+export type RfiLocationsZ = z.infer<typeof RfiLocationsSchema>;
