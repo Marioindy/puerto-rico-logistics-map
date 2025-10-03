@@ -22,6 +22,7 @@ import { v } from "convex/values";
 import { api } from "../_generated/api";
 import { createTool } from "@convex-dev/agent";
 import { z } from "zod";
+import type { BulkImportResult } from "@/agents/lib/types";
 import {
   validateCoordinates,
   validateAdminKey,
@@ -276,10 +277,10 @@ export const bulkImportTool = createTool({
       });
       const existingNames = new Set(existing.map(f => f.name.toLowerCase()));
 
-      const results = {
-        successful: [] as any[],
-        failed: [] as any[],
-        skipped: [] as any[],
+      const results: BulkImportResult = {
+        successful: [],
+        failed: [],
+        skipped: [],
       };
 
       for (let i = 0; i < args.facilities.length; i++) {

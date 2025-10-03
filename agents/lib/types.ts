@@ -77,15 +77,16 @@ export interface FacilityWithDistance {
  * Tool execution result
  * Standardized response format for all tools
  */
-export interface ToolResult<T = any> {
+export type ToolMetadata = Record<string, unknown> & {
+  executionTime?: number;
+  toolsUsed?: string[];
+};
+
+export interface ToolResult<T = unknown> {
   success: boolean;
   data?: T;
   error?: string;
-  metadata?: {
-    executionTime?: number;
-    toolsUsed?: string[];
-    [key: string]: any;
-  };
+  metadata?: ToolMetadata;
 }
 
 /**
@@ -114,15 +115,18 @@ export interface SessionValidation {
 export interface BulkImportResult {
   successful: Array<{
     name: string;
+    row?: number;
     id?: Id<"geoLocales">;
     status?: string;
   }>;
   failed: Array<{
     name: string;
+    row?: number;
     error: string;
   }>;
-  skipped?: Array<{
+  skipped: Array<{
     name: string;
+    row?: number;
     reason: string;
     existingId?: Id<"geoLocales">;
   }>;
@@ -163,26 +167,35 @@ export interface AgentConfig {
 /**
  * Tool context (extended from Convex ActionCtx)
  */
+export type ConvexCaller = (reference: unknown, args?: Record<string, unknown>) => Promise<unknown>;
+
 export interface ToolContext {
-  agent: any;
+  agent: Record<string, unknown>;
   userId?: string;
   threadId?: string;
   messageId?: string;
   // Convex context methods available
-  runQuery: any;
-  runMutation: any;
-  runAction: any;
+  runQuery: ConvexCaller;
+  runMutation: ConvexCaller;
+  runAction: ConvexCaller;
 }
 
 /**
  * Message metadata for agent conversations
  */
-export interface MessageMetadata {
+export type MessageMetadata = Record<string, unknown> & {
   toolsUsed?: string[];
   sessionId?: string;
   executionTime?: number;
   cost?: number;
-  [key: string]: any;
+};
+
+export interface ThreadMessage {
+  _id: string;
+  role: "user" | "assistant";
+  content: string;
+  createdAt?: number;
+  metadata?: MessageMetadata;
 }
 
 /**
@@ -191,7 +204,7 @@ export interface MessageMetadata {
 export interface ValidationError {
   field: string;
   message: string;
-  value?: any;
+  value?: unknown;
 }
 
 /**

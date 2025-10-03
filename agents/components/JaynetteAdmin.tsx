@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { toast } from "sonner";
+import type { ThreadMessage } from "../lib/types";
 
 /**
  * JaynetteAdmin Component
@@ -47,7 +48,7 @@ export default function JaynetteAdmin() {
   const messages = useQuery(
     api.agents.jaynette.getThreadMessages,
     threadId && sessionToken ? { threadId, sessionToken } : "skip"
-  );
+  ) as ThreadMessage[] | undefined;
 
   // Session validation
   const sessionStatus = useQuery(
@@ -263,7 +264,7 @@ export default function JaynetteAdmin() {
                 <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
               </div>
             ) : messages && messages.length > 0 ? (
-              messages.map((msg: any, idx: number) => (
+              messages.map((msg, idx) => (
                 <div
                   key={idx}
                   className={`flex ${
@@ -296,7 +297,7 @@ export default function JaynetteAdmin() {
                   Welcome, Administrator
                 </h3>
                 <p className="text-gray-600 mb-6 max-w-md">
-                  I'm Jaynette, your administrative assistant. I can help you
+                  I&apos;m Jaynette, your administrative assistant. I can help you
                   create, update, delete facilities, perform bulk imports, and
                   generate reports.
                 </p>

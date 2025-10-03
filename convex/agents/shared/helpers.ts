@@ -11,7 +11,7 @@
  * - Single source of truth for calculations
  */
 
-import type { Coordinates } from "@/agents/lib/types";
+import type { Coordinates, ToolMetadata, ToolResult } from "@/agents/lib/types";
 
 /**
  * Puerto Rico geographic bounds for validation
@@ -297,11 +297,11 @@ export function validateAdminKey(providedKey: string): void {
  * @param metadata - Optional metadata
  * @returns Tool result object
  */
-export function createSuccessResult<T>(data: T, metadata?: any) {
+export function createSuccessResult<T>(data: T, metadata?: ToolMetadata): ToolResult<T> {
   return {
     success: true,
     data,
-    ...(metadata && { metadata }),
+    ...(metadata ? { metadata } : {}),
   };
 }
 
@@ -311,7 +311,7 @@ export function createSuccessResult<T>(data: T, metadata?: any) {
  * @param error - Error message or Error object
  * @returns Tool result object
  */
-export function createErrorResult(error: string | Error) {
+export function createErrorResult(error: string | Error): ToolResult<never> {
   const message = error instanceof Error ? error.message : error;
   return {
     success: false,
@@ -326,13 +326,21 @@ export function createErrorResult(error: string | Error) {
  * @param requiredFields - Array of required field names
  * @throws Error if any required field is missing
  */
-export function validateRequiredFields<T extends Record<string, any>>(
+export function validateRequiredFields<T extends Record<string, unknown>>(
   obj: T,
   requiredFields: (keyof T)[]
 ): void {
-  const missing = requiredFields.filter(field => {
+  const missing = requiredFields.filter((field) => {
     const value = obj[field];
-    return value === undefined || value === null || value === '';
+    if (value === undefined || value === null) {
+      return true;
+    }
+
+    if (typeof value === 'string' && value.trim() === '') {
+      return true;
+    }
+
+    return false;
   });
 
   if (missing.length > 0) {

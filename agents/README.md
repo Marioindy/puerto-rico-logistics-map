@@ -62,19 +62,14 @@ npx convex dev
 ## Documentation
 
 ### Core Documentation
-- **[Architecture Guide](./docs/ARCHITECTURE.md)** - System design and data flow
-- **[Deployment Guide](./docs/DEPLOYMENT.md)** - Environment setup and deployment
-- **[Security Model](./docs/SECURITY.md)** - Authentication and permissions
+- **[Architecture Guide](./docs/ARCHITECTURE.md)** - Complete system design and data flow (90KB+)
+- **[Deployment Guide](./docs/DEPLOYMENT.md)** - Environment setup, deployment steps, and configuration
+- **[Future Work](./docs/FUTURE_WORK.md)** - ⚠️ **START HERE** for Claude Agent SDK integration
 
-### Agent-Specific Docs
-- **[Fabiola Documentation](./docs/FABIOLA.md)** - Public assistant capabilities and tools
-- **[Jaynette Documentation](./docs/JAYNETTE.md)** - Admin assistant operations
-- **[Tools Reference](./docs/TOOLS.md)** - All tool definitions and usage examples
-
-### Additional Resources
-- **[Troubleshooting](./docs/TROUBLESHOOTING.md)** - Common issues and solutions
-- **[Component README](./components/README.md)** - Frontend component usage
-- **[OpenRouter Setup](./lib/openrouter/README.md)** - API configuration
+### Component Documentation
+- **[Components README](./components/README.md)** - Frontend component usage, props, and examples
+- **[Convex Agents README](../convex/agents/README.md)** - Backend tools and Convex implementation
+- **[OpenRouter Setup](./lib/openrouter/README.md)** - API configuration and cost tracking
 
 ## Directory Structure
 
@@ -82,28 +77,26 @@ npx convex dev
 agents/
 ├── README.md                       # This file
 ├── docs/                           # Documentation
-│   ├── ARCHITECTURE.md
-│   ├── FABIOLA.md
-│   ├── JAYNETTE.md
-│   ├── TOOLS.md
-│   ├── DEPLOYMENT.md
-│   ├── SECURITY.md
-│   └── TROUBLESHOOTING.md
+│   ├── ARCHITECTURE.md             # ✅ Complete system design (90KB+)
+│   ├── DEPLOYMENT.md               # ✅ Environment setup and deployment
+│   └── FUTURE_WORK.md              # ⚠️ Claude Agent SDK integration guide
 ├── lib/                            # Shared utilities
 │   ├── openrouter/
-│   │   ├── client.ts              # OpenRouter API client
-│   │   └── README.md
-│   ├── config.ts                  # Agent configurations
-│   └── types.ts                   # TypeScript types
+│   │   ├── client.ts               # ✅ OpenRouter API client with cost tracking
+│   │   └── README.md               # ✅ API setup and usage guide
+│   ├── config.ts                   # ✅ Agent configurations (system prompts, models)
+│   └── types.ts                    # ✅ TypeScript types and constants
 └── components/                     # React components
-    ├── FabiolaChat.tsx            # Public chat widget
-    ├── JaynetteAdmin.tsx          # Admin dashboard
-    └── README.md
+    ├── FabiolaChat.tsx             # ✅ Public chat widget (floating)
+    ├── JaynetteAdmin.tsx           # ✅ Admin dashboard (full page)
+    └── README.md                   # ✅ Component documentation
 
 convex/agents/                      # Convex actions
-├── README.md
-├── fabiola.ts                      # Fabiola agent implementation
-└── jaynette.ts                     # Jaynette agent implementation
+├── README.md                       # ✅ Tools reference and patterns
+├── fabiola.ts                      # ✅ Fabiola: 4 read-only tools + chat handler
+├── jaynette.ts                     # ✅ Jaynette: 5 admin tools + chat handler
+└── shared/
+    └── helpers.ts                  # ✅ Geographic utils, validation, result helpers
 ```
 
 ## Quick Examples
@@ -192,12 +185,28 @@ pnpm run build
 
 See [docs/TROUBLESHOOTING.md](./docs/TROUBLESHOOTING.md) for testing guidelines.
 
+## Current Status
+
+### ✅ Complete (Ready to Use)
+- All 9 agent tools implemented and documented
+- React components (FabiolaChat, JaynetteAdmin) fully functional
+- Session management for admin access
+- OpenRouter API client with cost tracking
+- Comprehensive documentation (140KB+ across all docs)
+
+### ⚠️ Pending (Next Step)
+- **Claude Agent SDK integration** - See [FUTURE_WORK.md](./docs/FUTURE_WORK.md)
+  - Current: Chat handlers return placeholder responses
+  - Required: Integrate actual AI with tool orchestration
+  - Time estimate: 1-2 days for experienced developer
+
 ## Support
 
 For questions or issues:
-1. Check [Troubleshooting Guide](./docs/TROUBLESHOOTING.md)
-2. Review [Architecture Documentation](./docs/ARCHITECTURE.md)
-3. See specific agent docs: [Fabiola](./docs/FABIOLA.md) | [Jaynette](./docs/JAYNETTE.md)
+1. **Starting SDK integration?** → [FUTURE_WORK.md](./docs/FUTURE_WORK.md)
+2. **Understanding the system?** → [ARCHITECTURE.md](./docs/ARCHITECTURE.md)
+3. **Component usage?** → [components/README.md](./components/README.md)
+4. **Tool reference?** → [convex/agents/README.md](../convex/agents/README.md)
 
 ## Contributing
 

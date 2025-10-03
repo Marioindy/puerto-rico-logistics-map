@@ -5,6 +5,10 @@ import { ConvexError } from "convex/values";
 import type { QueryCtx, MutationCtx } from "./_generated/server";
 import type { Doc } from "./_generated/dataModel";
 
+type FacilityVariableNode = Doc<"facilityVariables"> & {
+  subVariables: FacilityVariableNode[];
+};
+
 /**
  * Helper: Apply filters to geoLocales
  */
@@ -115,8 +119,11 @@ export const listWithDetails = query({
             const sortedVariables = variables.sort((a, b) => a.sortOrder - b.sortOrder);
 
             // Build nested structure (handle parent-child relationships)
-            const variablesMap = new Map(sortedVariables.map((v) => [v._id, { ...v, subVariables: [] as any[] }]));
-            const rootVariables: any[] = [];
+            const variablesMap = new Map(sortedVariables.map((variable) => {
+              const variableNode: FacilityVariableNode = { ...variable, subVariables: [] };
+              return [variable._id, variableNode] as const;
+            }));
+            const rootVariables: FacilityVariableNode[] = [];
 
             for (const variable of sortedVariables) {
               const varWithSubs = variablesMap.get(variable._id)!;
@@ -187,8 +194,11 @@ export const getByIdWithDetails = query({
         const sortedVariables = variables.sort((a, b) => a.sortOrder - b.sortOrder);
 
         // Build nested structure
-        const variablesMap = new Map(sortedVariables.map((v) => [v._id, { ...v, subVariables: [] as any[] }]));
-        const rootVariables: any[] = [];
+        const variablesMap = new Map(sortedVariables.map((variable) => {
+          const variableNode: FacilityVariableNode = { ...variable, subVariables: [] };
+          return [variable._id, variableNode] as const;
+        }));
+        const rootVariables: FacilityVariableNode[] = [];
 
         for (const variable of sortedVariables) {
           const varWithSubs = variablesMap.get(variable._id)!;

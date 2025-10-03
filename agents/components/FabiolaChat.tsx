@@ -3,8 +3,9 @@
 import { useState, useRef, useEffect } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
-import { MessageCircle, X, Send, Loader2, MapPin, Warehouse, Plane } from "lucide-react";
+import { MessageCircle, X, Send, Loader2, MapPin, Warehouse, Plane, Minimize2, Maximize2 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
+import type { ThreadMessage } from "../lib/types";
 
 /**
  * FabiolaChat Component
@@ -35,7 +36,7 @@ export default function FabiolaChat() {
   const messages = useQuery(
     api.agents.fabiola.getThreadMessages,
     threadId ? { threadId } : "skip"
-  );
+  ) as ThreadMessage[] | undefined;
 
   // Create new thread
   const createThread = useMutation(api.agents.fabiola.createThread);
@@ -139,11 +140,13 @@ export default function FabiolaChat() {
           <button
             onClick={toggleMinimize}
             className="hover:bg-blue-700 rounded p-1 transition-colors"
-            aria-label={isMinimized ? "Maximize" : "Minimize"}
+            aria-label={isMinimized ? "Maximize chat" : "Minimize chat"}
           >
-            <span className="text-xl leading-none">
-              {isMinimized ? "□" : "−"}
-            </span>
+            {isMinimized ? (
+              <Maximize2 className="w-5 h-5" />
+            ) : (
+              <Minimize2 className="w-5 h-5" />
+            )}
           </button>
           <button
             onClick={toggleChat}
@@ -164,7 +167,7 @@ export default function FabiolaChat() {
                 <Loader2 className="w-6 h-6 animate-spin text-blue-600" />
               </div>
             ) : messages && messages.length > 0 ? (
-              messages.map((msg: any, idx: number) => (
+              messages.map((msg, idx) => (
                 <div
                   key={idx}
                   className={`flex ${
@@ -194,7 +197,7 @@ export default function FabiolaChat() {
               <div className="flex flex-col items-center justify-center h-full text-center text-gray-500">
                 <MessageCircle className="w-12 h-12 mb-3 text-gray-300" />
                 <h4 className="font-medium text-gray-700 mb-1">
-                  ¡Hola! I'm Fabiola
+                  Hola! I&apos;m Fabiola
                 </h4>
                 <p className="text-sm mb-4">
                   Your bilingual logistics assistant for Puerto Rico.
