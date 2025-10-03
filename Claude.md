@@ -130,35 +130,74 @@ geoLocales (locations)
 - **Type generation**: Running `npx convex dev` regenerates TypeScript types in `convex/_generated/`
 - **Schema updates**: When schema changes, Convex validates all existing documents against new schema
 
-### Admin Mutations Usage
-All admin mutations require the `ADMIN_SECRET_KEY` environment variable. Example usage:
+### Admin Mutations
+
+**Implementation Date**: 2025-10-02
+
+All database write operations (create, update, delete) are protected by admin mutations that require `ADMIN_SECRET_KEY` authentication.
+
+#### Available Admin Mutations
+
+**geoLocales** (3 mutations):
+- `adminCreate()` - Create new location
+- `adminUpdate()` - Update location (partial updates supported)
+- `adminDelete()` - Delete location (⚠️ cascades to boxes → variables)
+
+**facilityBoxes** (3 mutations):
+- `adminCreate()` - Create new box (validates geoLocale exists)
+- `adminUpdate()` - Update box (partial updates supported)
+- `adminDelete()` - Delete box (⚠️ cascades to variables)
+
+**facilityVariables** (3 mutations):
+- `adminCreate()` - Create variable (validates type, parent, box)
+- `adminUpdate()` - Update variable (prevents self-referencing)
+- `adminDelete()` - Delete variable (⚠️ cascades to child variables)
+
+#### Usage Example
 
 ```typescript
-// From client code (not recommended - exposes key)
-await api.geoLocales.adminCreate({
-  adminKey: "your-secret-key-here",
-  name: "New Warehouse",
-  type: "warehouse",
-  coordinates: { lat: 18.4, lng: -66.0 },
-  description: "A new warehouse facility",
-  region: "north",
-  isActive: true,
-});
-
-// Better: From server-side actions or scripts
+// From server-side actions or scripts
 import { api } from "../convex/_generated/api";
-const result = await ctx.runMutation(api.geoLocales.adminCreate, {
-  adminKey: process.env.ADMIN_SECRET_KEY!,
-  // ... other fields
+
+export const createLocation = action({
+  handler: async (ctx, args) => {
+    const adminKey = process.env.ADMIN_SECRET_KEY!;
+
+    const locationId = await ctx.runMutation(api.geoLocales.adminCreate, {
+      adminKey,
+      name: "New Warehouse",
+      type: "warehouse",
+      coordinates: { lat: 18.4, lng: -66.0 },
+      description: "A new warehouse facility",
+      region: "north",
+      isActive: true,
+    });
+
+    return locationId;
+  },
 });
 ```
 
-**Security Notes**:
-- Never expose `ADMIN_SECRET_KEY` in client-side code
-- Set `ADMIN_SECRET_KEY` in Convex dashboard for production
-- All mutations validate the key before executing
-- Failed authentication throws `ConvexError("Unauthorized access")`
-- Missing key configuration throws `ConvexError("Admin functionality not configured")`
+#### Security Features
+
+- ✅ **API Key Validation**: All mutations validate `ADMIN_SECRET_KEY` before execution
+- ✅ **Foreign Key Checks**: Ensures parent records exist (geoLocale for boxes, box for variables)
+- ✅ **Type Validation**: Variable types must be valid (text, email, number, coordinates, nested)
+- ✅ **Cascade Deletes**: Automatic cleanup of dependent records
+- ✅ **Self-Referencing Prevention**: Variables cannot be their own parent
+- ✅ **Clear Error Messages**:
+  - `ConvexError("Unauthorized access")` - Wrong key
+  - `ConvexError("Admin functionality not configured")` - Missing key
+  - `ConvexError("GeoLocale not found")` - Invalid reference
+
+#### Security Best Practices
+
+❌ **Never** expose `ADMIN_SECRET_KEY` in client-side code
+❌ **Never** hardcode the key in source files
+✅ **Always** use environment variables
+✅ **Always** call admin mutations from server-side code (Convex actions)
+
+For complete API reference, see [convex/README.md](convex/README.md).
 
 ## Editing & Build Hygiene
 - Avoid literal escape sequences (`\n`, `` `r`n ``); write real newlines.

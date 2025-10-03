@@ -141,14 +141,37 @@ geoLocales → facilityBoxes → facilityVariables
 - Dashboard edits must match schema or validation fails
 
 ### Admin Mutations Security
+
+**Implementation Date**: 2025-10-02
+
+All database write operations are protected by admin mutations requiring `ADMIN_SECRET_KEY`.
+
+**Files Created**:
+- `convex/geoLocales.ts` - Added 3 admin mutations (adminCreate, adminUpdate, adminDelete)
+- `convex/facilityBoxes.ts` - Created with 3 admin mutations + 2 queries
+- `convex/facilityVariables.ts` - Created with 3 admin mutations + 3 queries
+- `convex/README.md` - Comprehensive API documentation (1050 lines)
+
+**Security Implementation**:
 - All admin mutations (create, update, delete) require `ADMIN_SECRET_KEY` environment variable
 - Set in Convex dashboard (Settings → Environment Variables) for production
 - Set in `.env.local` for local development
-- Key is validated before any mutation executes
+- Key is validated before any mutation executes via `validateAdminKey()` helper
 - Unauthorized access throws `ConvexError("Unauthorized access")`
 - Missing configuration throws `ConvexError("Admin functionality not configured")`
 - Never expose `ADMIN_SECRET_KEY` in client-side code
-- All mutations include validation logic (foreign keys, data integrity, cascade deletes)
+- All mutations include validation logic:
+  - Foreign key checks (parent records must exist)
+  - Type validation (variable types, etc.)
+  - Self-referencing prevention (variables)
+  - Cascade deletes (maintains referential integrity)
+
+**Cascade Delete Behavior**:
+- Deleting geoLocale → deletes all facilityBoxes → deletes all facilityVariables
+- Deleting facilityBox → deletes all facilityVariables for that box
+- Deleting facilityVariable → recursively deletes all child variables
+
+For complete usage examples and API reference, see `convex/README.md`.
 
 ### RFI Survey Data
 - **Source**: `docs/RFI MAP/RFI Responses (NEW 69 Responses).xlsx`
