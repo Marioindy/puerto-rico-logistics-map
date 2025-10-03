@@ -13,8 +13,11 @@ import type {
   FilterApi,
   FunctionReference,
 } from "convex/server";
+import type * as facilityBoxes from "../facilityBoxes.js";
+import type * as facilityVariables from "../facilityVariables.js";
 import type * as functions_index from "../functions/index.js";
 import type * as functions_logistics_tracking from "../functions/logistics/tracking.js";
+import type * as geoLocales from "../geoLocales.js";
 import type * as validators from "../validators.js";
 
 /**
@@ -26,8 +29,11 @@ import type * as validators from "../validators.js";
  * ```
  */
 declare const fullApi: ApiFromModules<{
+  facilityBoxes: typeof facilityBoxes;
+  facilityVariables: typeof facilityVariables;
   "functions/index": typeof functions_index;
   "functions/logistics/tracking": typeof functions_logistics_tracking;
+  geoLocales: typeof geoLocales;
   validators: typeof validators;
 }>;
 export declare const api: FilterApi<

@@ -12,6 +12,7 @@ import Header from "@/components/Header";
 import "@/styles/globals.css";
 // Validate env at build/runtime (server only)
 import "@/lib/env";
+import Providers from "./providers"; // ⬅️ ADD THIS
 
 // Font configuration - creates CSS custom properties for consistent typography
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
@@ -31,7 +32,7 @@ export const metadata: Metadata = {
   },
   description:
     "Operational dashboard scaffolding for Puerto Rico logistics coordination across agencies and partners.",
-  metadataBase: new URL("https://puerto-rico-logistics-grid.local")
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://localhost:3000")
 };
 
 // Root layout component - wraps all pages with consistent structure
@@ -44,7 +45,8 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => (
       <div className="flex min-h-screen flex-col">
         <Header />
         <main className="flex-1">
-          {children}
+          {/* ⬇️ Wrap only the content that needs Convex */}
+          <Providers>{children}</Providers>
         </main>
         <footer className="border-t border-[color:var(--color-border)] bg-[#f3f1e8] py-10 text-center text-xs text-[#4b4b39]">
           &copy; {new Date().getFullYear()} Puerto Rico Department of Economic Development &amp; Commerce.

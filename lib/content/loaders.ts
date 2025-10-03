@@ -13,9 +13,11 @@ import {
   FacilitiesDatabaseSchema,
   MapMarkersSchema,
   FacilitySummarySchema,
+  RfiLocationsSchema,
   type FacilitiesDatabaseZ,
   type MapMarkersZ,
-  type FacilitySummaryZ
+  type FacilitySummaryZ,
+  type RfiLocationsZ
 } from "@/lib/content/schema"; // Zod schemas + inferred types
 
 // Import facility data
@@ -24,6 +26,9 @@ import {
   mapMarkers,
   facilitySummary
 } from "@/lib/facilityData";
+
+// Import RFI locations
+import rfiLocationsData from "@/lib/content/rfi-locations.json";
 
 /**
  * Validate and return the Home content.
@@ -98,4 +103,17 @@ export async function getFacilityById(id: string): Promise<FacilitiesDatabaseZ[s
 export async function getMarkersByType(type: 'airport' | 'port' | 'warehouse' | 'facility'): Promise<MapMarkersZ> {
   const markers = await getMapMarkers();
   return markers.filter(marker => marker.type === type);
+}
+
+/**
+ * Validate and return RFI survey locations with GPS coordinates.
+ *
+ * Notes for maintainers and AIs:
+ * - Validates location data from RFI survey responses.
+ * - Only includes entries with valid GPS coordinates.
+ * - Ensures coordinate validation and type safety.
+ * - Use this to display RFI facilities on the map.
+ */
+export async function getRfiLocations(): Promise<RfiLocationsZ> {
+  return RfiLocationsSchema.parse(rfiLocationsData);
 }

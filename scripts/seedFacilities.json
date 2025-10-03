@@ -1,0 +1,111 @@
+[
+  {
+    "externalId": "sju-airport",
+    "name": "Luis Muñoz Marín International Airport",
+    "lat": 18.19254,
+    "lng": -66.79591,
+    "category": "International Airport",
+    "address": "Ave. José A. Santana, Carolina, PR 00979",
+    "phone": "(787) 289-7240",
+    "website": "https://aeropuertosju.com"
+  },
+  {
+    "externalId": "ups-hub-sju",
+    "name": "UPS Hub - Carolina Airport",
+    "lat": 18.44094,
+    "lng": -66.99652,
+    "category": "Logistics Hub",
+    "address": "CAF 150, Sector Central, LMM Airport, Carolina, PR",
+    "phone": "(787) 458-1664"
+  },
+  {
+    "externalId": "caribbean-cold-storage",
+    "name": "Caribbean Cold Storage & Logistics",
+    "lat": 18.19471,
+    "lng": -66.62896,
+    "category": "Cold Storage Facility",
+    "address": "Mercado Central Calle C, Edificio 1229, Puerto Nuevo, PR 00920",
+    "phone": "(787) 783-0011 x1602"
+  },
+  {
+    "externalId": "allied-logistics-caguas",
+    "name": "Allied Logistics Corp - Main Facility",
+    "lat": 17.95346,
+    "lng": -65.89043,
+    "category": "Distribution Center",
+    "address": "State Road #1 Km 28.6 Barrio Río Cañas, Caguas, PR 00725",
+    "phone": "(787) 525-1774"
+  },
+  {
+    "externalId": "gmd-airline-services",
+    "name": "GMD Airline Services",
+    "lat": 18.17516,
+    "lng": -65.34492,
+    "category": "Air Cargo Handler",
+    "address": "Avenida Jose Tony Santana, Carolina, PR 00979",
+    "phone": "(787) 579-7922"
+  },
+  {
+    "externalId": "san-juan-port",
+    "name": "Port of San Juan",
+    "lat": 17.9701,
+    "lng": -66.41938,
+    "category": "Commercial Deep Water Port",
+    "phone": "(787) 723-2260",
+    "website": "https://prpa.pr.gov"
+  },
+  {
+    "externalId": "cbx-global-aguadilla",
+    "name": "CBX Global / CaribEx Worldwide",
+    "lat": 18.1743,
+    "lng": -66.70047,
+    "category": "Logistics Hub",
+    "address": "Carr #110, Km 24.6, Aguadilla, PR 00605",
+    "phone": "(787) 658-7000"
+  },
+  {
+    "externalId": "prsd-aguadilla",
+    "name": "Puerto Rico Storage & Distribution - FTZ",
+    "lat": 18.17663,
+    "lng": -65.78776,
+    "category": "Free Trade Zone Warehouse",
+    "address": "Carr 110 Km 28.7, Aguadilla, PR 00603",
+    "phone": "(787) 890-0131"
+  },
+  {
+    "externalId": "millicent-manufacturing",
+    "name": "Millicent Manufacturing PR LLC",
+    "lat": 18.10398,
+    "lng": -67.18439,
+    "category": "Pharmaceutical Manufacturing",
+    "address": "Union St Road 195 Km 1.1, Fajardo, PR 00738",
+    "phone": "(787) 710-5210"
+  },
+  {
+    "externalId": "buckeye-yabucoa",
+    "name": "Buckeye Caribbean Terminals LLC",
+    "lat": 18.31801,
+    "lng": -65.50605,
+    "category": "Fuel Terminal",
+    "address": "Road 901 KM 2.3 Camino Nuevo, Yabucoa, PR 00767",
+    "phone": "(787) 382-0807"
+  },
+  {
+    "externalId": "centro-mercantil-internacional",
+    "name": "Centro Mercantil Internacional",
+    "lat": 18.36847,
+    "lng": -67.1516,
+    "category": "Free Trade Zone",
+    "address": "Carr. 165, Km 2.4 Sector Pueblo Viejo, Guaynabo, PR",
+    "phone": "(787) 758-4747 x26800"
+  },
+  {
+    "externalId": "aes-guayama",
+    "name": "AES Puerto Rico, LP",
+    "lat": 18.50198,
+    "lng": -66.07983,
+    "category": "Industrial Manufacturing",
+    "address": "Bo. Jobos Carr #3, Km 142.0, Guayama, PR 00784",
+    "phone": "(787) 866-8117"
+  }
+]

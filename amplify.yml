@@ -6,11 +6,11 @@ applications:
           commands:
             - corepack enable pnpm
             - pnpm install --frozen-lockfile
-            - echo "CONVEX_DEPLOYMENT=$CONVEX_DEPLOYMENT" >> .env.production
-            - echo "CONVEX_URL=$CONVEX_URL" >> .env.production
-            - echo "PPLX=$PPLX" >> .env.production
         build:
           commands:
+            # Write AWS environment variables to .env.production for Next.js
+            - env | grep -e NEXT_PUBLIC_ >> .env.production
+            - env | grep -e CONVEX_ >> .env.production
             - pnpm run build
       artifacts:
         baseDirectory: .next
