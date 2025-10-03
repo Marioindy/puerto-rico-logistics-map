@@ -66,4 +66,18 @@ export default defineSchema({
     .index("by_status", ["status"])
     .index("by_originGeoId", ["originGeoId"])
     .index("by_destinationGeoId", ["destinationGeoId"]),
+
+  // Admin session management for Jaynette
+  adminSessions: defineTable({
+    token: v.string(),
+    userId: v.string(),
+    expiresAt: v.number(),
+    createdAt: v.number(),
+  })
+    .index("by_token", ["token"])
+    .index("by_userId", ["userId"])
+    .index("by_expiresAt", ["expiresAt"]),
+
+  // Note: threads and messages tables are auto-managed by Convex AI Component
+  // They are defined in convex/_generated/ after running `npx convex dev`
 });

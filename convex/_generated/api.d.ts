@@ -8,6 +8,10 @@
  * @module
  */
 
+import type * as adminSessions from "../adminSessions.js";
+import type * as agents_fabiola from "../agents/fabiola.js";
+import type * as agents_jaynette from "../agents/jaynette.js";
+import type * as agents_shared_helpers from "../agents/shared/helpers.js";
 import type * as facilityBoxes from "../facilityBoxes.js";
 import type * as facilityVariables from "../facilityVariables.js";
 import type * as functions_index from "../functions/index.js";
@@ -30,6 +34,10 @@ import type {
  * ```
  */
 declare const fullApi: ApiFromModules<{
+  adminSessions: typeof adminSessions;
+  "agents/fabiola": typeof agents_fabiola;
+  "agents/jaynette": typeof agents_jaynette;
+  "agents/shared/helpers": typeof agents_shared_helpers;
   facilityBoxes: typeof facilityBoxes;
   facilityVariables: typeof facilityVariables;
   "functions/index": typeof functions_index;

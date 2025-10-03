@@ -6,6 +6,7 @@ import { api } from "../../convex/_generated/api";
 import { useState } from "react";
 import InteractiveMap from "@/components/InteractiveMap";
 import FacilityInfoPanel from "./components/FacilityInfoPanel";
+import FabiolaChat from "@/agents/components/FabiolaChat";
 import type { SelectedPinZ } from "@/lib/content/schema";
 
 export default function RfiMapPage() {
@@ -88,6 +89,9 @@ export default function RfiMapPage() {
           />
         </div>
       )}
+
+      {/* Fabiola Chat Widget */}
+      <FabiolaChat />
     </div>
   );
 }

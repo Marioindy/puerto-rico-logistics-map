@@ -80,7 +80,8 @@ export function estimateCost(
   inputTokens: number,
   outputTokens: number
 ): number {
-  const info = MODEL_INFO[modelKey];
+  const modelId = MODELS[modelKey];
+  const info = MODEL_INFO[modelId];
   const inputCost = (inputTokens / 1000000) * info.inputCostPer1M;
   const outputCost = (outputTokens / 1000000) * info.outputCostPer1M;
   return inputCost + outputCost;
