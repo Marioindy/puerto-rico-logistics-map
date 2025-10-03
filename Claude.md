@@ -6,7 +6,7 @@
   - `<name>.tsx` (actual page implementation)
   - `page.tsx` (`export { default } from "./<name>";`)
   - `components/` for page-specific components (do not leave placeholders).
-- Shared widgets live in `components/` (e.g., `InteractiveMap`, `MapView`, `Header`, `ChatbotFab`).
+- Shared widgets live in `components/` (e.g., `InteractiveMap`, `MapView`, `Header`).
 
 ## Zod Usage
 - Content schemas: `lib/content/schema.ts`; loader: `lib/content/loaders.ts`.
@@ -20,10 +20,6 @@
 - RFI map workspace lives in `app/rfimap/rfimap.tsx` with its unique components under `app/rfimap/components/`.
 
 ## Environment Variables
-- `PPLX`: server-only Perplexity key (used in `app/api/chat/route.ts`).
-  - **Production**: Set in Amplify console (Hosting -> Environment variables)
-  - **Local dev**: Add to `.env.local`
-  - **Code**: Access with `process.env.PPLX`, return descriptive 500 if missing or malformed.
 - `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY`: client map key (used in `MapView` and `InteractiveMap`).
 - `ADMIN_SECRET_KEY`: server-only admin key for protected Convex mutations.
   - **Production**: Set in Convex dashboard (Settings -> Environment Variables)

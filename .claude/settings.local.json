@@ -26,7 +26,9 @@
       "Bash(git log:*)",
       "Bash(pnpm list:*)",
       "Bash(pnpm add:*)",
-      "Bash(node:*)"
+      "Bash(node:*)",
+      "Bash(rm:*)",
+      "Bash(test:*)"
     ],
     "deny": [],
     "ask": []

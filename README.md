@@ -30,12 +30,9 @@ app/
       MapFilterPanel.tsx
     rfimap.tsx           # RFI map workspace
     page.tsx             # Re-exports rfimap.tsx
-  api/
-    chat/route.ts        # Perplexity proxy
   layout.tsx             # Global shell (imports env validation)
   page.tsx               # Root route re-export (points to homepage/page)
 components/
-  ChatbotFab.tsx         # Shared assistant FAB
   Header.tsx             # Global header
   InteractiveMap.tsx     # Full map surface (RFI)
   MapView.tsx            # Landing preview map
@@ -88,9 +85,6 @@ NEXT_PUBLIC_CONVEX_URL=https://your-deployment.convex.cloud
 
 # Admin access (server-only)
 ADMIN_SECRET_KEY=your-secure-random-string
-
-# Perplexity AI (server-only)
-PPLX=your-perplexity-api-key
 
 # Google Maps (client)
 NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=your-google-maps-key
@@ -192,18 +186,12 @@ npx convex -h               # CLI help
 npx convex docs             # Open docs
 ```
 
-## Assistant (Perplexity)
-- API route: `app/api/chat/route.ts` proxies to Perplexity using the secret `PPLX`.
-- Client: `components/ChatbotFab.tsx` renders a floating button and a chat panel on the RFI Map page.
-- Security: The browser never receives `PPLX`; requests go through the server route.
-
 ### Environment Variables Reference
 
 **Local Development** (`.env.local`):
 - `CONVEX_DEPLOYMENT` - Convex deployment ID
 - `NEXT_PUBLIC_CONVEX_URL` - Convex API URL (client)
 - `ADMIN_SECRET_KEY` - Admin mutation authentication (server-only)
-- `PPLX` - Perplexity API key (server-only)
 - `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` - Google Maps key (client)
 
 **Production** (Convex Dashboard):
@@ -216,5 +204,5 @@ npx convex docs             # Open docs
 ### Amplify secrets
 - Create SecureString parameters manually at /amplify/<app-id>/<branch>/<SECRET_NAME> (no branch-hash suffix) so Amplify picks them up.
 - Grant the Amplify service role ssm:GetParametersByPath permission on that prefix to allow build-time access.
-- During preBuild, the amplify.yml build script parses the secrets JSON payload and exports CONVEX_URL, NEXT_PUBLIC_CONVEX_URL, CONVEX_DEPLOYMENT, CONVEX_DEPLOY_KEY, PPLX, and NEXT_PUBLIC_GOOGLE_MAPS_API_KEY, writing them to .env.local and .env.production for Next.js.
+- During preBuild, the amplify.yml build script parses the secrets JSON payload and exports CONVEX_URL, NEXT_PUBLIC_CONVEX_URL, CONVEX_DEPLOYMENT, CONVEX_DEPLOY_KEY, and NEXT_PUBLIC_GOOGLE_MAPS_API_KEY, writing them to .env.local and .env.production for Next.js.
 - Keep secret names aligned with the runtime env var keys; the build step falls back to existing env vars if a secret is missing.
